@@ -55,7 +55,7 @@ onMounted(() => {
 
 <template>
   <van-config-provider :theme="dark ? 'dark' : 'light'">
-    <div class="w-full max-w-xl mx-auto">
+    <div class="w-full max-w-xl min-h-screen mx-auto">
       <van-nav-bar
         v-if="hasTitle || isNotHome"
         :title="hasTitle ? title : ''"

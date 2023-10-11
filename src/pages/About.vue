@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import bjutSuLogo from '../assets/images/bjut-su-logo.svg?url'
+import bjutSuLogo from '../assets/images/bjut-su-logo.svg?inline'
 </script>
 
 <template>
