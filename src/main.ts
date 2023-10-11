@@ -5,11 +5,15 @@ import {
   Cell,
   CellGroup,
   ConfigProvider,
+  Empty,
   Field,
   Icon,
   Image,
+  List,
+  Loading,
   NavBar,
   Progress,
+  PullRefresh,
   Tabbar,
   TabbarItem
 } from 'vant'
@@ -23,12 +27,16 @@ import 'vant/es/button/style'
 import 'vant/es/cell/style'
 import 'vant/es/cell-group/style'
 import 'vant/es/dialog/style'
+import 'vant/es/empty/style'
 import 'vant/es/field/style'
 import 'vant/es/icon/style'
 import 'vant/es/image/style'
+import 'vant/es/list/style'
+import 'vant/es/loading/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/notify/style'
 import 'vant/es/progress/style'
+import 'vant/es/pull-refresh/style'
 import 'vant/es/tabbar/style'
 import 'vant/es/tabbar-item/style'
 import 'vant/es/toast/style'
@@ -46,11 +54,15 @@ app.use(Button)
 app.use(Cell)
 app.use(CellGroup)
 app.use(ConfigProvider)
+app.use(Empty)
 app.use(Field)
 app.use(Icon)
 app.use(Image)
+app.use(List)
+app.use(Loading)
 app.use(NavBar)
 app.use(Progress)
+app.use(PullRefresh)
 app.use(Tabbar)
 app.use(TabbarItem)
 

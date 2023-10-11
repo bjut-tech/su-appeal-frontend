@@ -18,7 +18,7 @@ import bjutSuLogo from '../assets/images/bjut-su-logo.svg?url'
         <span class="ml-2 text-sm text-gray-500 dark:text-gray-400">v1.0.0</span>
       </h1>
       <p class="text-gray-500 dark:text-gray-400">
-        北京工业大学学生会学生权益部
+        信息学部学生会学生权益部
       </p>
     </div>
   </div>

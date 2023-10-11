@@ -295,8 +295,8 @@ onBeforeUnmount(() => {
         />
         <div class="bg-gray-200 rounded-full h-1 dark:bg-gray-700">
           <div
-            class="bg-brand h-1 rounded-full transition-[width] ease-in-out duration-500"
-            :style="{ width: 'progress' in item ? item.progress * 100 : 100 + '%' }"
+            class="bg-brand h-1 rounded-full transition-[width] ease-linear duration-500"
+            :style="{ width: 'progress' in item ? (item.progress || 0) * 100 : 100 + '%' }"
           />
         </div>
         <div class="flex justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">

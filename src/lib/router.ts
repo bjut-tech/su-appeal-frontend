@@ -5,6 +5,7 @@ import About from '../pages/About.vue'
 import AdminAdminList from '../pages/AdminAdminList.vue'
 import AdminIndex from '../pages/AdminIndex.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
+import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
 import NotFound from '../pages/NotFound.vue'
 import UserIndex from '../pages/UserIndex.vue'
@@ -44,6 +45,13 @@ const routes = [
     meta: {
       title: '服务器状态',
       auth: 'ADMIN'
+    }
+  },
+  {
+    path: '/announcements',
+    component: AnnouncementIndex,
+    meta: {
+      title: '权益墙公告栏'
     }
   },
   {

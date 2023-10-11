@@ -8,7 +8,14 @@ module.exports = {
     'plugin:vue/vue3-recommended',
     'standard-with-typescript'
   ],
-  overrides: [],
+  overrides: [
+    {
+      files: ['src/pages/**.vue'],
+      rules: {
+        'vue/multi-word-component-names': 'off'
+      }
+    }
+  ],
   parser: 'vue-eslint-parser',
   parserOptions: {
     parser: '@typescript-eslint/parser',

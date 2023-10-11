@@ -28,7 +28,7 @@ const title = computed<string>(() => {
 })
 
 const isNotHome = computed(() => {
-  return route.path !== '/' && route.redirectedFrom?.path !== '/'
+  return route.path !== '/' && route.redirectedFrom?.path !== '/' && !isTabBarRoute.value
 })
 
 const navigateBack = (): void => {
@@ -57,7 +57,7 @@ onMounted(() => {
   <van-config-provider :theme="dark ? 'dark' : 'light'">
     <div class="w-full max-w-xl mx-auto">
       <van-nav-bar
-        v-if="!isTabBarRoute && (hasTitle || isNotHome)"
+        v-if="hasTitle || isNotHome"
         :title="hasTitle ? title : ''"
         :left-text="isNotHome ? '返回' : ''"
         :left-arrow="isNotHome"
