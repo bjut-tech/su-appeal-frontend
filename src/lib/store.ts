@@ -1,9 +1,10 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
+import { showToast } from 'vant'
 
 import { useAxiosInstance } from './axios'
-import type { User, UserPrincipal } from '../types/User.ts'
+import type { User, UserPrincipal } from '../types/User'
 
 export const useStore = defineStore('app', () => {
   const token = useLocalStorage('token', '')
@@ -21,7 +22,10 @@ export const useStore = defineStore('app', () => {
     } catch (e: any) {
       console.error(e)
       if (e?.response?.status === 401) {
+        showToast('登录状态失效，请重新登录')
         logout()
+      } else {
+        showToast('加载用户信息失败')
       }
     }
   }

@@ -25,7 +25,7 @@ const { data, error } = useAxios<string[]>('admin/admins', useAxiosInstance(), {
     </van-cell-group>
     <p
       v-show="data"
-      class="px-4 text-xs text-gray-500 dark:text-gray-400"
+      class="px-4 text-xs text-gray-500 dark:text-neutral-400"
     >
       以上账号具有管理员权限。列表仅供参考，如需修改，请编辑服务器配置。
     </p>

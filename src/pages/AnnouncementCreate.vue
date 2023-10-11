@@ -8,11 +8,16 @@ import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
-import type { AnnouncementShow, AnnouncementCreate } from '../types/Announcement'
+import type { AnnouncementShow } from '../types/Announcement'
+import type { Attachment } from '../types/Attachment'
+
+interface Form {
+  title: string
+  content: string
+  attachments: Attachment[]
+}
 
 const router = useRouter()
-
-type Form = AnnouncementCreate
 
 const initialForm: Form = {
   title: '',
@@ -61,15 +66,20 @@ const submit = (): void => {
     message: '确定要发布吗？'
   }).then(() => {
     execute({
-      data: form.value
+      data: {
+        title: form.value.title,
+        content: form.value.content,
+        attachmentIds: form.value.attachments.map((attachment) => attachment.id)
+      }
     }).then(({ data }) => {
       draft.value = form.value = initialForm
       showToast({
         type: 'success',
         message: '发布成功',
+        mask: true,
         onClose: () => {
           if (data.value) {
-            router.push(`/announcements/${data.value.id}`)
+            router.replace('/announcements')
           }
         }
       })
@@ -127,6 +137,8 @@ onBeforeUnmount(() => {
         class="flex-1 dark:border-neutral-800"
         type="default"
         block
+        icon-prefix="bi"
+        icon="floppy"
         @click="saveDraft"
       >
         保存草稿
@@ -135,6 +147,8 @@ onBeforeUnmount(() => {
         class="flex-1"
         type="primary"
         block
+        icon-prefix="bi"
+        icon="send"
         :loading="isLoading"
         loading-text="加载中..."
         @click="submit"

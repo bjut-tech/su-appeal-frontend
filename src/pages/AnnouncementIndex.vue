@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
-import { relativeTime } from '../utils/datetime'
+import AnnouncementShowComponent from '../components/AnnouncementShow.vue'
 import type { AnnouncementShow } from '../types/Announcement'
 import type { CursorPagination } from '../types/pagination'
 
@@ -52,6 +52,10 @@ const onRefresh = (): void => {
   onLoad()
 }
 
+const onDeleted = (id: number): void => {
+  list.value = list.value.filter((item) => item.id !== id)
+}
+
 const goCreate = (): void => {
   router.push('/announcements/create')
 }
@@ -73,36 +77,24 @@ const goCreate = (): void => {
       error-text="请求失败，点击重新加载"
       @load="onLoad"
     >
-      <div
-        v-if="store.isAdmin"
-        class="flex justify-center items-center px-4 py-16 bg-white dark:bg-neutral-900 rounded-lg shadow cursor-pointer select-none"
-        @click="goCreate"
-      >
-        <h5 class="text-sm text-gray-500 dark:text-gray-400 font-medium">
-          点击发布新公告
-        </h5>
-      </div>
-
-      <div
+      <template v-if="store.isAdmin">
+        <div
+          class="flex justify-center items-center px-4 py-16 bg-white dark:bg-neutral-900 rounded-lg cursor-pointer select-none"
+          role="link"
+          @click="goCreate"
+        >
+          <h5 class="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+            点击发布新公告
+          </h5>
+        </div>
+        <hr class="my-2 border-gray-200 dark:border-neutral-800">
+      </template>
+      <announcement-show-component
         v-for="item of list"
         :key="item.id"
-        class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow"
-      >
-        <div class="flex items-center gap-2">
-          <div class="flex-shrink-0 w-2 h-4 rounded bg-brand" />
-          <h5
-            class="flex-1 font-semibold"
-            v-text="item.title"
-          />
-          <span class="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
-            {{ relativeTime(item.createdAt) }}
-          </span>
-        </div>
-        <p
-          class="text-sm text-gray-600 dark:text-gray-300"
-          v-text="item.content"
-        />
-      </div>
+        :announcement="item"
+        @deleted="onDeleted(item.id)"
+      />
     </van-list>
   </van-pull-refresh>
 </template>

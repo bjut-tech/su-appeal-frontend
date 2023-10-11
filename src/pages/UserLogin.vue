@@ -99,7 +99,7 @@ const submit = (): void => {
     >
       登录
     </van-button>
-    <p class="text-xs text-gray-400 dark:text-gray-500">
+    <p class="text-xs text-gray-400 dark:text-neutral-500">
       您输入的密码仅用于向统一认证服务发送请求以验证身份，不会以任何形式保存，请放心使用。
     </p>
   </div>

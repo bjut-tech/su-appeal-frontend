@@ -9,6 +9,8 @@ import {
   Field,
   Icon,
   Image,
+  ImagePreview,
+  Lazyload,
   List,
   Loading,
   NavBar,
@@ -31,6 +33,8 @@ import 'vant/es/empty/style'
 import 'vant/es/field/style'
 import 'vant/es/icon/style'
 import 'vant/es/image/style'
+import 'vant/es/image-preview/style'
+import 'vant/es/lazyload/style'
 import 'vant/es/list/style'
 import 'vant/es/loading/style'
 import 'vant/es/nav-bar/style'
@@ -58,6 +62,8 @@ app.use(Empty)
 app.use(Field)
 app.use(Icon)
 app.use(Image)
+app.use(ImagePreview)
+app.use(Lazyload)
 app.use(List)
 app.use(Loading)
 app.use(NavBar)

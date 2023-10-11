@@ -1,5 +1,5 @@
 import type { User } from './User'
-import type { Attachment } from './Attachment.ts'
+import type { Attachment } from './Attachment'
 
 export interface Announcement {
   id: number
@@ -17,10 +17,4 @@ export interface AnnouncementShow {
   content: string
   attachments: Attachment[]
   createdAt: string
-}
-
-export interface AnnouncementCreate {
-  title: string
-  content: string
-  attachments: Attachment[]
 }

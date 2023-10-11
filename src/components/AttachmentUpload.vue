@@ -4,6 +4,7 @@ import { showToast, showConfirmDialog } from 'vant'
 import { UseObjectUrl } from '@vueuse/components'
 import type { AxiosError, AxiosProgressEvent } from 'axios'
 
+import { getUrl } from '../utils/attachment'
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 import filesize from '../utils/filesize'
@@ -150,14 +151,11 @@ const updateState = (id: string, state: Partial<AttachmentUploading> | Attachmen
   ]
 }
 
-const getUrl = (file: AttachmentUploaded): string => {
-  return `${import.meta.env.VITE_API_URL}/attachments/${file.id}`
-}
-
 const onUpload = (mime: string = '*'): void => {
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = mime
+  input.multiple = store.isAdmin
   input.onchange = (e) => {
     const newFiles = (e.target as HTMLInputElement).files
 
@@ -258,7 +256,7 @@ onBeforeUnmount(() => {
     <div
       v-for="(item, i) in files"
       :key="item.id"
-      class="w-full flex items-stretch text-gray-800 dark:text-gray-200 border-t border-b border-gray-200 dark:border-neutral-800"
+      class="w-full flex items-stretch text-gray-800 dark:text-neutral-200 border-b border-gray-200 dark:border-neutral-800"
     >
       <div
         v-if="isImage(item.name)"
@@ -299,7 +297,7 @@ onBeforeUnmount(() => {
             :style="{ width: 'progress' in item ? (item.progress || 0) * 100 : 100 + '%' }"
           />
         </div>
-        <div class="flex justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
+        <div class="flex justify-between gap-2 text-xs text-gray-500 dark:text-neutral-400">
           <span
             v-if="item.size"
             v-text="filesize(item.size)"

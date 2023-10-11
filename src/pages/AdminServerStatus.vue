@@ -32,7 +32,7 @@ useIntervalFn(() => {
 <template>
   <div class="flex flex-col items-stretch py-6 px-4 gap-4">
     <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
-      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           CPU
         </h2>
@@ -62,7 +62,7 @@ useIntervalFn(() => {
     </div>
 
     <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
-      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           内存
         </h2>
@@ -91,7 +91,7 @@ useIntervalFn(() => {
       </div>
       <div
         v-if="data"
-        class="flex justify-between gap-2 text-xs text-gray-500 dark:text-gray-400"
+        class="flex justify-between gap-2 text-xs text-gray-500 dark:text-neutral-400"
       >
         <p>已用 {{ filesize(data.memoryUsed) }}</p>
         <p>共 {{ filesize(data.memoryMax) }}</p>
@@ -99,7 +99,7 @@ useIntervalFn(() => {
     </div>
 
     <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
-      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-gray-400">
+      <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           硬盘
         </h2>
@@ -128,7 +128,7 @@ useIntervalFn(() => {
       </div>
       <div
         v-if="data"
-        class="flex justify-between gap-2 text-xs text-gray-500 dark:text-gray-400"
+        class="flex justify-between gap-2 text-xs text-gray-500 dark:text-neutral-400"
       >
         <p>可用 {{ filesize(data.diskFree) }}</p>
         <p>共 {{ filesize(data.diskTotal) }}</p>
