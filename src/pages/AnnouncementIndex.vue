@@ -1,59 +1,44 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { showConfirmDialog, showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
-import AnnouncementShowComponent from '../components/AnnouncementShow.vue'
+import { relativeTime } from '../utils/datetime'
+import AttachmentShow from '../components/AttachmentShow.vue'
+import PaginatedList from '../components/PaginatedList.vue'
 import type { AnnouncementShow } from '../types/Announcement'
-import type { CursorPagination } from '../types/pagination'
 
 const store = useStore()
 
 const router = useRouter()
 
-const axios = useAxiosInstance()
-
 const list = ref<AnnouncementShow[]>([])
-const cursor = ref<string | null>(null)
 
-const error = ref(false)
-const loading = ref(false)
-const finished = ref(false)
-const refreshing = ref(false)
-
-const onLoad = (): void => {
-  axios.get<CursorPagination<AnnouncementShow>>('announcements', {
-    params: {
-      cursor: cursor.value
-    }
-  }).then(({ data }) => {
-    list.value = [...list.value, ...data.data]
-    cursor.value = data.cursor
-
-    if (!data.cursor) {
-      finished.value = true
-    }
-  }).catch((e) => {
-    console.error(e)
-    error.value = true
-  }).finally(() => {
-    loading.value = false
-    refreshing.value = false
+const onDelete = (id: number): void => {
+  showConfirmDialog({
+    title: '注意',
+    message: '确定要删除这则公告吗？',
+    confirmButtonColor: '#ee0a24'
+  }).then(() => {
+    useAxiosInstance()
+      .delete(`announcements/${id}`)
+      .then(() => {
+        showToast({
+          type: 'success',
+          message: '删除成功'
+        })
+        list.value = list.value.filter((item) => item.id !== id)
+      })
+      .catch((e) => {
+        console.error(e)
+        showToast({
+          type: 'fail',
+          message: '删除失败'
+        })
+      })
   })
-}
-
-const onRefresh = (): void => {
-  finished.value = false
-  list.value = []
-  cursor.value = null
-  error.value = false
-  refreshing.value = true
-  onLoad()
-}
-
-const onDeleted = (id: number): void => {
-  list.value = list.value.filter((item) => item.id !== id)
 }
 
 const goCreate = (): void => {
@@ -62,39 +47,63 @@ const goCreate = (): void => {
 </script>
 
 <template>
-  <van-pull-refresh
-    v-model="refreshing"
-    :disabled="loading"
-    @refresh="onRefresh"
+  <paginated-list
+    v-model="list"
+    url="announcements"
+    custom-class="flex flex-col px-4 py-6 gap-4"
+    pull-refresh
   >
-    <van-list
-      v-model:loading="loading"
-      v-model:error="error"
-      class="flex flex-col px-4 py-6 gap-4"
-      loading-text="正在加载更多数据..."
-      :finished="finished"
-      finished-text="到底了"
-      error-text="请求失败，点击重新加载"
-      @load="onLoad"
+    <template v-if="store.isAdmin">
+      <div
+        class="flex justify-center items-center px-4 py-16 bg-white dark:bg-neutral-900 rounded-lg cursor-pointer select-none"
+        role="link"
+        @click="goCreate"
+      >
+        <h5 class="text-sm text-gray-500 dark:text-neutral-400 font-medium">
+          点击发布新公告
+        </h5>
+      </div>
+      <hr class="my-2 border-gray-200 dark:border-neutral-800">
+    </template>
+
+    <div
+      v-for="item of list"
+      :key="item.id"
+      class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm"
     >
-      <template v-if="store.isAdmin">
-        <div
-          class="flex justify-center items-center px-4 py-16 bg-white dark:bg-neutral-900 rounded-lg cursor-pointer select-none"
-          role="link"
-          @click="goCreate"
-        >
-          <h5 class="text-sm text-gray-500 dark:text-neutral-400 font-medium">
-            点击发布新公告
-          </h5>
+      <div class="flex flex-col items-stretch gap-4 p-4">
+        <div class="flex items-center gap-2">
+          <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
+          <h5
+            class="flex-1 font-semibold"
+            v-text="item.title"
+          />
+          <span
+            class="flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
+            v-text="relativeTime(item.createdAt)"
+          />
         </div>
-        <hr class="my-2 border-gray-200 dark:border-neutral-800">
-      </template>
-      <announcement-show-component
-        v-for="item of list"
-        :key="item.id"
-        :announcement="item"
-        @deleted="onDeleted(item.id)"
-      />
-    </van-list>
-  </van-pull-refresh>
+        <p
+          class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
+          v-text="item.content"
+        />
+        <attachment-show :attachments="item.attachments" />
+      </div>
+      <div
+        v-if="store.isAdmin"
+        class="flex justify-end px-4 py-3 gap-3 border-t border-gray-200 dark:border-neutral-800"
+      >
+        <van-button
+          type="danger"
+          size="small"
+          plain
+          icon-prefix="bi"
+          icon="trash3"
+          @click="onDelete(item.id)"
+        >
+          删除
+        </van-button>
+      </div>
+    </div>
+  </paginated-list>
 </template>

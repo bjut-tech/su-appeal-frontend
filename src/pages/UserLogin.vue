@@ -37,7 +37,11 @@ const submit = (): void => {
     }
   }).then(({ data }) => {
     store.token = data.access_token
-    router.replace('/user')
+
+    const url = sessionStorage.getItem('intendedUrl') ?? '/user'
+    sessionStorage.removeItem('intendedUrl')
+
+    router.replace(url)
   }).catch((e) => {
     if (e.response?.status === 401) {
       error.value = '登录失败，请检查输入的账号和密码是否有误'

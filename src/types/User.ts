@@ -1,9 +1,7 @@
 export interface User {
   id: number
   uid: string
-  role: 'STUDENT' | 'TEACHER'
   name: string | null
-  admin: boolean
   createdAt: string
   updatedAt: string
 }

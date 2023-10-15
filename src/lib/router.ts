@@ -3,13 +3,23 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useStore } from './store'
 import About from '../pages/About.vue'
 import AdminAdminList from '../pages/AdminAdminList.vue'
-import AdminIndex from '../pages/AdminIndex.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
 import NotFound from '../pages/NotFound.vue'
+import QuestionCreate from '../pages/QuestionCreate.vue'
+import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
+import QuestionIndex from '../pages/QuestionIndex.vue'
+import QuestionShow from '../pages/QuestionShow.vue'
 import UserIndex from '../pages/UserIndex.vue'
 import UserLogin from '../pages/UserLogin.vue'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    title?: string
+    auth?: string | boolean
+  }
+}
 
 const routes = [
   {
@@ -21,14 +31,6 @@ const routes = [
     component: About,
     meta: {
       title: '关于'
-    }
-  },
-  {
-    path: '/admin',
-    component: AdminIndex,
-    meta: {
-      title: '管理员菜单',
-      auth: 'ADMIN'
     }
   },
   {
@@ -70,8 +72,50 @@ const routes = [
     }
   },
   {
+    path: '/questions',
+    component: QuestionIndex,
+    meta: {
+      title: '已答复反馈'
+    }
+  },
+  {
+    path: '/questions/:id',
+    component: QuestionShow,
+    meta: {
+      title: '反馈详情'
+    }
+  },
+  {
+    path: '/questions/create',
+    component: QuestionCreate,
+    meta: {
+      title: '反馈问题'
+    }
+  },
+  {
+    path: '/questions/create/success',
+    component: QuestionCreateSuccess,
+    meta: {
+      title: '反馈问题'
+    }
+  },
+  {
     path: '/user',
-    component: UserIndex
+    component: UserIndex,
+    meta: {
+      title: '我的权益墙'
+    }
+  },
+  {
+    path: '/user/history',
+    component: QuestionIndex,
+    props: {
+      history: true
+    },
+    meta: {
+      title: '我的反馈历史',
+      auth: true
+    }
   },
   {
     path: '/:pathMatch(.*)*',
@@ -108,6 +152,7 @@ router.beforeEach(async (to) => {
 
     if (!store.loggedIn) {
       // not logged in, go to login page
+      sessionStorage.setItem('intendedUrl', to.fullPath)
       return '/login'
     }
 

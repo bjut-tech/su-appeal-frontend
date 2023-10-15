@@ -13,7 +13,8 @@ const route = useRoute()
 
 const tabBarRoutes = reactive([
   { path: '/announcements', name: '公告', icon: 'megaphone' },
-  { path: '/questions', name: '反馈', icon: 'pencil-square' },
+  { path: '/questions/create', name: '反馈', icon: 'pencil-square' },
+  { path: '/questions', name: '答复', icon: 'chat-left-text' },
   { path: '/user', name: '我的', icon: 'person-circle' }
 ])
 const isTabBarRoute = computed(() => {

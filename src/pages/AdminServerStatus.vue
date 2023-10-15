@@ -31,7 +31,7 @@ useIntervalFn(() => {
 
 <template>
   <div class="flex flex-col items-stretch py-6 px-4 gap-4">
-    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
+    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-sm">
       <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           CPU
@@ -61,7 +61,7 @@ useIntervalFn(() => {
       </div>
     </div>
 
-    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
+    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-sm">
       <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           内存
@@ -98,7 +98,7 @@ useIntervalFn(() => {
       </div>
     </div>
 
-    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow">
+    <div class="flex flex-col items-stretch gap-2 p-4 bg-white dark:bg-neutral-900 rounded-lg shadow-sm">
       <div class="flex justify-between gap-2 text-sm text-gray-500 dark:text-neutral-400">
         <h2 class="font-semibold">
           硬盘

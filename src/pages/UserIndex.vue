@@ -11,8 +11,6 @@ const store = useStore()
     <van-cell-group inset>
       <van-cell
         size="large"
-        icon-prefix="bi"
-        icon="person"
         :title="store.user?.name || '匿名用户'"
         :label="store.user?.uid"
         center
@@ -48,6 +46,24 @@ const store = useStore()
 
     <van-cell-group inset>
       <van-cell
+        v-if="store.isAdmin"
+        icon-prefix="bi"
+        icon="megaphone"
+        title="发布公告"
+        center
+        is-link
+        to="/announcements/create"
+      />
+      <van-cell
+        v-if="store.isAdmin"
+        icon-prefix="bi"
+        icon="chat-left-text"
+        title="回复反馈"
+        center
+        is-link
+        to="/questions"
+      />
+      <van-cell
         icon-prefix="bi"
         icon="clock-history"
         title="我的历史反馈"
@@ -63,11 +79,20 @@ const store = useStore()
       <van-cell
         v-if="store.isAdmin"
         icon-prefix="bi"
-        icon="gear-wide-connected"
-        title="管理员菜单"
+        icon="people"
+        title="管理员列表"
         center
         is-link
-        to="/admin"
+        to="/admin/admins"
+      />
+      <van-cell
+        v-if="store.isAdmin"
+        icon-prefix="bi"
+        icon="hdd"
+        title="服务器状态"
+        center
+        is-link
+        to="/admin/server-status"
       />
       <van-cell
         icon-prefix="bi"
