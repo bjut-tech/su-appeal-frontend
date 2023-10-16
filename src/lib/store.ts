@@ -4,9 +4,12 @@ import { useLocalStorage } from '@vueuse/core'
 import { showToast } from 'vant'
 
 import { useAxiosInstance } from './axios'
+import browsers from '../utils/browser'
 import type { User, UserPrincipal } from '../types/User'
 
 export const useStore = defineStore('app', () => {
+  const isWeixin = ref<boolean>(browsers.isWeixin())
+
   const token = useLocalStorage('token', '')
   const user = ref<User | null>(null)
   const roles = ref<string[]>([])
@@ -57,6 +60,7 @@ export const useStore = defineStore('app', () => {
     checkApiHealth,
     fetchUser,
     isAdmin,
+    isWeixin,
     loggedIn,
     logout,
     roles,

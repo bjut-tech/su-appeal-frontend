@@ -25,7 +25,7 @@ const isTabBarRoute = computed(() => {
 
 const hasTitle = computed(() => !!route.meta.title)
 const title = computed<string>(() => {
-  return (route.meta.title as string | undefined) ?? '学生权益墙'
+  return route.meta?.title ?? '学生权益墙'
 })
 
 const isNotHome = computed(() => {
@@ -58,7 +58,7 @@ onMounted(() => {
   <van-config-provider :theme="dark ? 'dark' : 'light'">
     <div class="w-full max-w-xl min-h-screen mx-auto">
       <van-nav-bar
-        v-if="hasTitle || isNotHome"
+        v-if="!store.isWeixin && (hasTitle || isNotHome)"
         :title="hasTitle ? title : ''"
         :left-text="isNotHome ? '返回' : ''"
         :left-arrow="isNotHome"

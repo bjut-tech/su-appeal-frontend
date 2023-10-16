@@ -1,4 +1,6 @@
+import { nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
 import { useStore } from './store'
 import About from '../pages/About.vue'
@@ -6,6 +8,7 @@ import AdminAdminList from '../pages/AdminAdminList.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
+import Home from '../pages/Home.vue'
 import NotFound from '../pages/NotFound.vue'
 import QuestionCreate from '../pages/QuestionCreate.vue'
 import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
@@ -21,10 +24,10 @@ declare module 'vue-router' {
   }
 }
 
-const routes = [
+const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    redirect: '/announcements'
+    component: Home
   },
   {
     path: '/about',
@@ -82,7 +85,8 @@ const routes = [
     path: '/questions/:id',
     component: QuestionShow,
     meta: {
-      title: '反馈详情'
+      title: '反馈详情',
+      auth: true
     }
   },
   {
@@ -163,6 +167,19 @@ router.beforeEach(async (to) => {
   }
 
   return true
+})
+
+/**
+ * Change page title
+ */
+router.afterEach((to) => {
+  const store = useStore()
+
+  if (store.isWeixin) {
+    nextTick(() => {
+      document.title = to.meta?.title ?? '学生权益墙'
+    })
+  }
 })
 
 export default router

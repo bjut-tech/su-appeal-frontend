@@ -6,10 +6,8 @@ import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
-import AttachmentShow from '../components/AttachmentShow.vue'
+import QuestionShowComponent from '../components/QuestionShow.vue'
 import type { Question } from '../types/Question'
-
-import avatarPlaceholder from '../assets/images/avatar-placeholder.png?url'
 
 const route = useRoute()
 
@@ -44,6 +42,10 @@ const fetchData = (): void => {
     })
 }
 
+const onDelete = (): void => {
+  router.replace('/questions')
+}
+
 onBeforeRouteUpdate(async (to, from) => {
   if (to.params.id === from.params.id) {
     return
@@ -60,46 +62,19 @@ onMounted(() => {
 <template>
   <div
     v-if="question"
-    class="flex flex-col items-stretch pb-6"
+    class="flex flex-col items-stretch p-6"
   >
-    <van-cell-group
-      class="flex flex-col p-4 gap-2"
-      title="反馈内容"
-      inset
-    >
-      <div
-        class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
-        v-text="question.content"
-      />
-      <attachment-show :attachments="question.attachments" />
-    </van-cell-group>
-    <van-cell-group
-      v-if="question.user"
-      title="提交者"
-      inset
-    >
-      <van-cell
-        :title="question.user.name || '匿名用户'"
-        :label="question.user.uid"
-        center
-      >
-        <template #icon>
-          <van-image
-            class="w-12 h-12 mr-3"
-            round
-            fit="fill"
-            :src="avatarPlaceholder"
-          />
-        </template>
-      </van-cell>
-      <van-cell
-        icon-prefix="bi"
-        icon="telephone"
-        title="联系方式"
-        :value="question.contact"
-        center
-      />
-    </van-cell-group>
+    <question-show-component
+      :question="question"
+      :show-user="store.isAdmin"
+      :show-published="store.isAdmin"
+      full-content
+      :allow-publish="store.isAdmin && !!question.answer"
+      :allow-delete="!question.published && (store.isAdmin || question.user?.id === store.user?.id)"
+      @publish="fetchData"
+      @unpublish="fetchData"
+      @delete="onDelete"
+    />
   </div>
   <div
     v-else

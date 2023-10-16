@@ -1,53 +1,39 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { showConfirmDialog, showToast } from 'vant'
 
-import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 import PaginatedList from '../components/PaginatedList.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
 import type { Question } from '../types/Question'
 
-const props = defineProps<{
+defineProps<{
   history?: boolean
 }>()
 
 const store = useStore()
 
-const router = useRouter()
-
 const list = ref<Question[]>([])
 
-const onShow = (id: number): void => {
-  if (props.history || store.isAdmin) {
-    router.push(`/questions/${id}`)
-  }
+const onPublish = (id: number): void => {
+  list.value = list.value.map((item) => {
+    if (item.id === id) {
+      item.published = true
+    }
+    return item
+  })
+}
+
+const onUnpublish = (id: number): void => {
+  list.value = list.value.map((item) => {
+    if (item.id === id) {
+      item.published = false
+    }
+    return item
+  })
 }
 
 const onDelete = (id: number): void => {
-  showConfirmDialog({
-    title: '注意',
-    message: '确定要删除这则反馈吗？',
-    confirmButtonColor: '#ee0a24'
-  }).then(() => {
-    useAxiosInstance()
-      .delete(`questions/${id}`)
-      .then(() => {
-        showToast({
-          type: 'success',
-          message: '删除成功'
-        })
-        list.value = list.value.filter((item) => item.id !== id)
-      })
-      .catch((e) => {
-        console.error(e)
-        showToast({
-          type: 'fail',
-          message: '删除失败'
-        })
-      })
-  })
+  list.value = list.value.filter((item) => item.id !== id)
 }
 </script>
 
@@ -69,15 +55,16 @@ const onDelete = (id: number): void => {
     <question-show-component
       v-for="item in list"
       :key="item.id"
-      :class="{ 'cursor-pointer select-none': history || store.isAdmin }"
       :question="item"
       :show-user="!history && store.isAdmin"
       :show-published="history || store.isAdmin"
       :full-content="!history && !store.isAdmin && item.published"
       :allow-answer="store.isAdmin"
+      :allow-show="history || store.isAdmin"
       :allow-delete="!item.published && (history || store.isAdmin)"
       :allow-publish="!history && store.isAdmin && !!item.answer"
-      @click="onShow(item.id)"
+      @publish="onPublish(item.id)"
+      @unpublish="onUnpublish(item.id)"
       @delete="onDelete(item.id)"
     />
   </paginated-list>
