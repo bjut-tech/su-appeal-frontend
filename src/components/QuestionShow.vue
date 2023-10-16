@@ -79,6 +79,10 @@ const onPublish = (): void => {
 }
 
 const onUnpublish = (): void => {
+  if (!props.allowPublish) {
+    return
+  }
+
   axios.post(`questions/${props.question.id}/unpublish`)
     .then(() => {
       showToast({
@@ -97,6 +101,10 @@ const onUnpublish = (): void => {
 }
 
 const onDelete = (): void => {
+  if (!props.allowDelete) {
+    return
+  }
+
   showConfirmDialog({
     title: '注意',
     message: '确定要删除这则反馈吗？',

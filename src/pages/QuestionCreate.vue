@@ -37,12 +37,7 @@ const draft = useLocalStorage<Form | null>('draft_question', initialForm(), {
 })
 
 const form = ref<Form>(initialForm())
-const errors = ref<Record<string, string>>({
-  uid: '',
-  name: '',
-  contact: '',
-  content: ''
-})
+const errors = ref<Record<string, string>>({})
 
 const {
   isLoading,
@@ -165,9 +160,9 @@ onBeforeUnmount(() => {
       />
     </van-cell-group>
     <attachment-upload v-model="form.attachments" />
-    <div class="flex mt-4 px-4 gap-4">
+    <div class="flex justify-evenly items-stretch mt-4 px-4 gap-4">
       <van-button
-        class="flex-1 dark:border-neutral-800"
+        class="dark:border-neutral-800"
         type="default"
         block
         icon-prefix="bi"
@@ -177,7 +172,6 @@ onBeforeUnmount(() => {
         保存草稿
       </van-button>
       <van-button
-        class="flex-1"
         type="primary"
         block
         icon-prefix="bi"
@@ -186,7 +180,7 @@ onBeforeUnmount(() => {
         loading-text="加载中..."
         @click="submit"
       >
-        提交
+        提交反馈
       </van-button>
     </div>
   </div>

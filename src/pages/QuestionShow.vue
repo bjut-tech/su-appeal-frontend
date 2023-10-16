@@ -1,13 +1,20 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
-import { showToast } from 'vant'
+import { showConfirmDialog, showToast } from 'vant'
 import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
+import AttachmentUpload from '../components/AttachmentUpload.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
+import type { Attachment } from '../types/Attachment'
 import type { Question } from '../types/Question'
+
+interface AnswerForm {
+  content: string
+  attachments: Attachment[]
+}
 
 const route = useRoute()
 
@@ -22,9 +29,13 @@ const question = ref<Question | null>(null)
 const fetchData = (): void => {
   question.value = null
 
-  axios.get(`/questions/${route.params.id}`)
+  axios.get<Question>(`/questions/${route.params.id}`)
     .then(({ data }) => {
       question.value = data
+      answerForm.value = {
+        content: data.answer?.content ?? '',
+        attachments: data.answer?.attachments ?? []
+      }
     })
     .catch((e: AxiosError) => {
       console.error(e)
@@ -46,6 +57,71 @@ const onDelete = (): void => {
   router.replace('/questions')
 }
 
+const answerForm = ref<AnswerForm>({
+  content: '',
+  attachments: []
+})
+
+const answerErrors = ref<Record<string, string>>({})
+const isAnswerSubmitting = ref(false)
+
+const answerSubmit = (): void => {
+  if (!question.value) {
+    return
+  }
+
+  answerErrors.value = {}
+  isAnswerSubmitting.value = true
+  axios.post(`questions/${question.value.id}/answer`, {
+    content: answerForm.value.content,
+    attachmentIds: answerForm.value.attachments.map((attachment) => attachment.id)
+  }).then(() => {
+    showToast({
+      type: 'success',
+      message: '回复成功'
+    })
+    fetchData()
+  }).catch((e: AxiosError) => {
+    showToast({
+      type: 'fail',
+      message: '回复失败'
+    })
+    if (e?.response?.status === 422) {
+      answerErrors.value = e?.response?.data as Record<string, string>
+    } else {
+      console.error(e)
+    }
+  }).finally(() => (isAnswerSubmitting.value = false))
+}
+
+const onDeleteAnswer = (): void => {
+  if (!question.value) {
+    return
+  }
+
+  showConfirmDialog({
+    title: '注意',
+    message: '确定要删除回复吗？',
+    confirmButtonColor: '#ee0a24'
+  }).then(() => {
+    axios.delete(`questions/${question.value?.id}/answer`)
+      .then(() => {
+        showToast({
+          type: 'success',
+          message: '删除成功'
+        })
+        fetchData()
+      })
+      .catch((e) => {
+        console.error(e)
+        showToast({
+          type: 'fail',
+          message: '删除失败'
+        })
+      })
+  })
+}
+
 onBeforeRouteUpdate(async (to, from) => {
   if (to.params.id === from.params.id) {
     return
@@ -62,9 +138,10 @@ onMounted(() => {
 <template>
   <div
     v-if="question"
-    class="flex flex-col items-stretch p-6"
+    class="flex flex-col items-stretch py-6"
   >
     <question-show-component
+      class="mx-4"
       :question="question"
       :show-user="store.isAdmin"
       :show-published="store.isAdmin"
@@ -75,6 +152,50 @@ onMounted(() => {
       @unpublish="fetchData"
       @delete="onDelete"
     />
+
+    <template v-if="store.isAdmin">
+      <hr class="mx-4 mt-6 mb-2 border-gray-200 dark:border-neutral-800">
+      <van-cell-group
+        title="回复"
+        inset
+      >
+        <van-field
+          v-model="answerForm.content"
+          type="textarea"
+          placeholder="请填写要回复的内容，也可以在下方上传图片和附件。"
+          rows="10"
+          autosize
+          show-word-limit
+          maxlength="20000"
+          autocomplete="off"
+          :error-message="answerErrors.content"
+        />
+      </van-cell-group>
+      <attachment-upload v-model="answerForm.attachments" />
+      <div class="flex justify-evenly items-stretch mt-4 px-4 gap-4">
+        <van-button
+          v-if="question.answer"
+          type="danger"
+          block
+          icon-prefix="bi"
+          icon="trash3"
+          @click="onDeleteAnswer"
+        >
+          删除回复
+        </van-button>
+        <van-button
+          type="primary"
+          block
+          icon-prefix="bi"
+          icon="send"
+          :loading="isAnswerSubmitting"
+          loading-text="加载中..."
+          @click="answerSubmit"
+        >
+          提交回复
+        </van-button>
+      </div>
+    </template>
   </div>
   <div
     v-else
