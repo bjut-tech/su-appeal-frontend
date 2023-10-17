@@ -77,7 +77,7 @@ const { data: count } = useAxios<{
           <span
             v-if="count?.unreplied"
             class="text-red-500"
-          >{{ count?.unreplied }}条未回复</span>
+          >{{ count?.unreplied }}条待回复</span>
         </template>
       </van-cell>
       <van-cell
@@ -92,9 +92,11 @@ const { data: count } = useAxios<{
       />
     </van-cell-group>
 
-    <van-cell-group inset>
+    <van-cell-group
+      v-if="store.isAdmin"
+      inset
+    >
       <van-cell
-        v-if="store.isAdmin"
         icon-prefix="bi"
         icon="people"
         title="管理员列表"
@@ -103,13 +105,23 @@ const { data: count } = useAxios<{
         to="/admin/admins"
       />
       <van-cell
-        v-if="store.isAdmin"
         icon-prefix="bi"
         icon="hdd"
         title="服务器状态"
         center
         is-link
         to="/admin/server-status"
+      />
+    </van-cell-group>
+
+    <van-cell-group inset>
+      <van-cell
+        icon-prefix="bi"
+        icon="bug"
+        title="遇到问题？"
+        center
+        is-link
+        to="/about/feedback"
       />
       <van-cell
         icon-prefix="bi"

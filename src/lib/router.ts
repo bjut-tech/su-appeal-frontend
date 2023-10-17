@@ -8,6 +8,7 @@ import AdminAdminList from '../pages/AdminAdminList.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
+import Feedback from '../pages/Feedback.vue'
 import Home from '../pages/Home.vue'
 import NotFound from '../pages/NotFound.vue'
 import QuestionCreate from '../pages/QuestionCreate.vue'
@@ -34,6 +35,13 @@ const routes: RouteRecordRaw[] = [
     component: About,
     meta: {
       title: '关于'
+    }
+  },
+  {
+    path: '/about/feedback',
+    component: Feedback,
+    meta: {
+      title: '遇到问题？'
     }
   },
   {

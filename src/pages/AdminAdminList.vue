@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useSorted } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
+import type { Ref } from 'vue'
 
 import { useAxiosInstance } from '../lib/axios'
 
@@ -7,13 +9,15 @@ const { data, error } = useAxios<string[]>('admin/admins', useAxiosInstance(), {
   immediate: true,
   initialData: []
 })
+
+const dataSorted = useSorted(data as Ref<string[]>)
 </script>
 
 <template>
   <div class="flex flex-col items-stretch py-6 gap-4">
     <van-cell-group inset>
       <van-cell
-        v-for="item in data"
+        v-for="item in dataSorted"
         :key="item"
         :title="item"
       />

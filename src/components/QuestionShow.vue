@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
-import { relativeTime } from '../utils/datetime'
+import { formatTime } from '../utils/datetime'
 import AttachmentShow from './AttachmentShow.vue'
 import type { Question } from '../types/Question'
 
@@ -176,7 +176,7 @@ const onDelete = (): void => {
           反馈
         </h5>
         <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
-          <span v-text="relativeTime(question.createdAt)" />
+          <span v-text="formatTime(question.createdAt)" />
           <span
             v-if="!question.answer"
             :class="{ 'text-red-500': allowAnswer }"
@@ -216,7 +216,7 @@ const onDelete = (): void => {
           答复
         </h5>
         <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
-          <span v-text="relativeTime(question.answer.updatedAt)" />
+          <span v-text="formatTime(question.answer.updatedAt)" />
           <template v-if="showPublished">
             <span
               v-if="question.published"

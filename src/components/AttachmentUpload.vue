@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { showToast, showConfirmDialog } from 'vant'
 import { UseObjectUrl } from '@vueuse/components'
-import type { AxiosError, AxiosProgressEvent } from 'axios'
+import type { AxiosError } from 'axios'
 
 import { getUrl } from '../utils/attachment'
 import { useAxiosInstance } from '../lib/axios'
@@ -85,6 +85,7 @@ const uploadNext = (): void => {
 
   updateState(file.id, {
     error: undefined,
+    status: 'uploading',
     progress: 0,
     cancel: () => {
       controller.abort()
@@ -95,10 +96,14 @@ const uploadNext = (): void => {
   formData.append('file', file.rawFile)
   formData.append('name', file.name)
 
-  axios.post('attachments', formData, {
+  axios.post<string>('attachments', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    },
     signal: controller.signal,
-    onUploadProgress: (event: AxiosProgressEvent) => {
+    onUploadProgress: (event) => {
       updateState(file.id, {
+        status: 'uploading',
         progress: event.loaded / (event.total ?? file.size)
       })
     }
@@ -294,7 +299,7 @@ onBeforeUnmount(() => {
         <div class="bg-gray-200 rounded-full h-1 dark:bg-gray-700">
           <div
             class="bg-brand h-1 rounded-full transition-[width] ease-linear duration-500"
-            :style="{ width: 'progress' in item ? (item.progress || 0) * 100 : 100 + '%' }"
+            :style="{ width: ('progress' in item ? (item.progress || 0) * 100 : 100) + '%' }"
           />
         </div>
         <div class="flex justify-between gap-2 text-xs text-gray-500 dark:text-neutral-400">

@@ -5,7 +5,7 @@ import { showConfirmDialog, showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
-import { relativeTime } from '../utils/datetime'
+import { formatDate } from '../utils/datetime'
 import AttachmentShow from '../components/AttachmentShow.vue'
 import PaginatedList from '../components/PaginatedList.vue'
 import type { AnnouncementShow } from '../types/Announcement'
@@ -80,7 +80,7 @@ const goCreate = (): void => {
           />
           <span
             class="flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
-            v-text="relativeTime(item.createdAt)"
+            v-text="formatDate(item.createdAt)"
           />
         </div>
         <p

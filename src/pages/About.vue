@@ -4,7 +4,7 @@ import { useAxios } from '@vueuse/integrations/useAxios'
 
 import { useAxiosInstance } from '../lib/axios'
 
-import bjutSuLogo from '../assets/images/bjut-su-logo.svg?url'
+import logo from '../assets/images/bjut-fit-logo.svg?inline'
 
 interface ActuatorInfo {
   build?: {
@@ -33,10 +33,10 @@ const version = computed(() => {
   <div class="flex flex-col items-center gap-8 py-20">
     <div class="flex gap-4 items-stretch">
       <van-image
-        class="w-32 h-32"
+        class="w-32 h-32 bg-white"
         round
         fit="fill"
-        :src="bjutSuLogo"
+        :src="logo"
       />
     </div>
     <div class="flex flex-col items-center gap-2">
