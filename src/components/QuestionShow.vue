@@ -42,6 +42,20 @@ const content = computed(() => {
     : props.question.content
 })
 
+const answerContent = computed(() => {
+  if (!props.question.answer) {
+    return ''
+  }
+
+  if (props.fullContent) {
+    return props.question.answer.content
+  }
+
+  return props.question.answer.content.length > 300
+    ? `${props.question.answer.content.slice(0, 297)}...`
+    : props.question.answer.content
+})
+
 const onShow = (): void => {
   if (!props.allowShow) {
     return
@@ -156,6 +170,19 @@ const onDelete = (): void => {
       class="flex flex-col items-stretch p-4"
       :class="{ 'gap-4': fullContent, 'gap-2': !fullContent }"
     >
+      <div class="flex items-center gap-2">
+        <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
+        <h5 class="flex-1 font-semibold">
+          反馈
+        </h5>
+        <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
+          <span v-text="relativeTime(question.createdAt)" />
+          <span
+            v-if="!question.answer"
+            :class="{ 'text-red-500': allowAnswer }"
+          >未答复</span>
+        </div>
+      </div>
       <p
         class="text-sm text-gray-600 dark:text-neutral-300"
         :class="{ 'whitespace-pre-wrap': fullContent }"
@@ -177,34 +204,42 @@ const onDelete = (): void => {
       >
         联系方式：{{ question.contact }}
       </p>
-      <div class="inline-flex items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
-        <span>反馈于{{ relativeTime(question.createdAt) }}</span>
-        <span
-          v-if="!question.answer"
-          :class="{ 'text-red-500': allowAnswer }"
-        >未答复</span>
-      </div>
     </div>
     <div
       v-if="question.answer"
-      class="flex flex-col items-stretch p-4 gap-4 border-t border-gray-200 dark:border-neutral-800"
+      class="flex flex-col items-stretch p-4 border-t border-gray-200 dark:border-neutral-800"
+      :class="{ 'gap-4': fullContent, 'gap-2': !fullContent }"
     >
+      <div class="flex items-center gap-2">
+        <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
+        <h5 class="flex-1 font-semibold">
+          答复
+        </h5>
+        <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
+          <span v-text="relativeTime(question.answer.updatedAt)" />
+          <template v-if="showPublished">
+            <span
+              v-if="question.published"
+              class="text-brand"
+            >已公布</span>
+            <span v-else>未公布</span>
+          </template>
+        </div>
+      </div>
       <p
         class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
-        v-text="question.answer.content"
+        v-text="answerContent"
       />
-      <attachment-show :attachments="question.answer.attachments" />
-
-      <div class="inline-flex items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
-        <span>回复于{{ relativeTime(question.answer.updatedAt) }}</span>
-        <template v-if="showPublished">
-          <span
-            v-if="question.published"
-            class="text-brand"
-          >已公布</span>
-          <span v-else>未公布</span>
-        </template>
-      </div>
+      <attachment-show
+        v-if="fullContent"
+        :attachments="question.answer.attachments"
+      />
+      <p
+        v-else-if="question.answer.attachments.length"
+        class="text-xs text-gray-500 dark:text-neutral-400"
+      >
+        以及 {{ question.answer.attachments.length }} 个附件
+      </p>
     </div>
     <div
       v-if="allowShow || allowPublish || allowDelete"
@@ -217,7 +252,7 @@ const onDelete = (): void => {
         plain
         @click="onShow"
       >
-        查看详情
+        查看详情 / 回复
       </van-button>
       <template v-if="allowPublish">
         <van-button

@@ -13,9 +13,6 @@ import type { Question } from '../types/Question'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
 
 interface Form {
-  uid: string
-  name: string
-  contact: string
   content: string
   attachments: Attachment[]
 }
@@ -24,10 +21,11 @@ const store = useStore()
 
 const router = useRouter()
 
+const uid = ref<string>('')
+const name = ref<string>('')
+const contact = useLocalStorage('user_contact', '')
+
 const initialForm = (): Form => ({
-  uid: '',
-  name: '',
-  contact: '',
   content: '',
   attachments: []
 })
@@ -49,7 +47,7 @@ const {
 })
 
 const saveDraft = (): void => {
-  if (form.value.content.length) {
+  if (form.value.content.length || form.value.attachments.length) {
     draft.value = form.value
     showToast('草稿已保存')
   } else {
@@ -65,9 +63,9 @@ const submit = (): void => {
   }).then(() => {
     execute({
       data: {
-        uid: store.user?.uid ?? form.value.uid,
-        name: store.user?.name ?? form.value.name,
-        contact: form.value.contact,
+        uid: store.user?.uid ?? uid.value,
+        name: store.user?.name ?? name.value,
+        contact: contact.value,
         content: form.value.content,
         attachmentIds: form.value.attachments.map((attachment) => attachment.id)
       }
@@ -94,8 +92,8 @@ onMounted(() => {
   }
 
   if (store.user) {
-    form.value.uid = store.user.uid
-    form.value.name = store.user.name ?? ''
+    uid.value = store.user.uid
+    name.value = store.user.name ?? ''
   }
 })
 
@@ -111,7 +109,7 @@ onBeforeUnmount(() => {
       inset
     >
       <van-field
-        v-model="form.uid"
+        v-model="uid"
         type="text"
         label="学号"
         placeholder="请输入学号"
@@ -122,7 +120,7 @@ onBeforeUnmount(() => {
         autocomplete="username"
       />
       <van-field
-        v-model="form.name"
+        v-model="name"
         type="text"
         label="姓名"
         placeholder="请输入姓名"
@@ -133,7 +131,7 @@ onBeforeUnmount(() => {
         autocomplete="name"
       />
       <van-field
-        v-model="form.contact"
+        v-model="contact"
         type="text"
         label="联系方式"
         placeholder="请输入联系方式（手机号或微信号等）"

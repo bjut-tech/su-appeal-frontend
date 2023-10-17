@@ -1,9 +1,19 @@
 <script setup lang="ts">
+import { useAxios } from '@vueuse/integrations/useAxios'
+
+import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 
 import avatarPlaceholder from '../assets/images/avatar-placeholder.png?url'
 
 const store = useStore()
+
+const { data: count } = useAxios<{
+  history?: number
+  unreplied?: number
+}>('questions/count', useAxiosInstance(), {
+  immediate: true
+})
 </script>
 
 <template>
@@ -62,12 +72,19 @@ const store = useStore()
         center
         is-link
         to="/questions"
-      />
+      >
+        <template #value>
+          <span
+            v-if="count?.unreplied"
+            class="text-red-500"
+          >{{ count?.unreplied }}条未回复</span>
+        </template>
+      </van-cell>
       <van-cell
         icon-prefix="bi"
         icon="clock-history"
         title="我的历史反馈"
-        :value="store.loggedIn ? '' : '登录后可查看'"
+        :value="store.loggedIn ? (count?.history || '') : '登录后可查看'"
         center
         :is-link="store.loggedIn"
         :to="store.loggedIn ? '/user/history' : ''"
