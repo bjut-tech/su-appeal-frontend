@@ -27,6 +27,9 @@ export const useStore = defineStore('app', () => {
       if (e?.response?.status === 401) {
         showToast('登录状态失效，请重新登录')
         logout()
+        setTimeout(() => {
+          location.reload()
+        }, 2000)
       } else {
         showToast('加载用户信息失败')
       }
