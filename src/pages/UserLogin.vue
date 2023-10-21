@@ -38,6 +38,10 @@ const submit = (): void => {
   }).then(({ data }) => {
     store.token = data.access_token
 
+    if (data.expires_in) {
+      store.tokenExpiry = Date.now() + data.expires_in * 1000
+    }
+
     const url = sessionStorage.getItem('intendedUrl') ?? '/user'
     sessionStorage.removeItem('intendedUrl')
 

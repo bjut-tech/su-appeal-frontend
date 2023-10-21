@@ -1,7 +1,8 @@
 import axios from 'axios'
-import type { AxiosInstance } from 'axios'
+import type { AxiosInstance, AxiosError } from 'axios'
 
 import { useStore } from './store'
+import { showNotify } from 'vant'
 
 let instance: AxiosInstance | null = null
 export const useAxiosInstance = (): AxiosInstance => {
@@ -11,13 +12,30 @@ export const useAxiosInstance = (): AxiosInstance => {
     })
 
     instance.interceptors.request.use((config) => {
-      const userStore = useStore()
+      const store = useStore()
 
-      if (userStore.token) {
-        config.headers.Authorization = `Bearer ${userStore.token}`
+      if (store.token) {
+        config.headers.Authorization = `Bearer ${store.token}`
       }
 
       return config
+    })
+
+    instance.interceptors.response.use(null, (e: AxiosError) => {
+      if (!e.response) {
+        showNotify({
+          type: 'danger',
+          message: '无法连接到服务器'
+        })
+      } else if (e?.response?.status === 401 && !e?.config?.url?.includes('token')) {
+        useStore().logout()
+        showNotify({
+          type: 'warning',
+          message: '登录状态失效，请重新登录'
+        })
+      } else {
+        Promise.reject(e)
+      }
     })
   }
 

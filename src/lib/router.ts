@@ -146,6 +146,11 @@ const router = createRouter({
 router.beforeEach(async () => {
   const store = useStore()
 
+  if (store.token && store.tokenExpiry !== -1 && store.tokenExpiry < Date.now()) {
+    // token expired
+    store.logout()
+  }
+
   if (store.token && !store.user) {
     await store.fetchUser()
   }

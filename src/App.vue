@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDark } from '@vueuse/core'
-import { showNotify } from 'vant'
 
 import { useStore } from './lib/store'
 
@@ -41,17 +40,6 @@ const navigateBack = (): void => {
 }
 
 const dark = useDark()
-
-onMounted(() => {
-  store.checkApiHealth().then((health) => {
-    if (!health) {
-      showNotify({
-        type: 'danger',
-        message: '无法连接到服务器'
-      })
-    }
-  })
-})
 </script>
 
 <template>

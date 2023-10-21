@@ -11,6 +11,8 @@ export const useStore = defineStore('app', () => {
   const isWeixin = ref<boolean>(browsers.isWeixin())
 
   const token = useLocalStorage('token', '')
+  const tokenExpiry = useLocalStorage('token_expiry', -1)
+
   const user = ref<User | null>(null)
   const roles = ref<string[]>([])
 
@@ -22,45 +24,20 @@ export const useStore = defineStore('app', () => {
       const { data } = await useAxiosInstance().get<UserPrincipal>('user')
       user.value = data.user
       roles.value = data.authorities.map((auth) => auth.authority)
-    } catch (e: any) {
+    } catch (e) {
       console.error(e)
-      if (e?.response?.status === 401) {
-        showToast('登录状态失效，请重新登录')
-        logout()
-        setTimeout(() => {
-          location.reload()
-        }, 2000)
-      } else {
-        showToast('加载用户信息失败')
-      }
+      showToast('加载用户信息失败')
     }
   }
 
   const logout = (): void => {
     token.value = ''
+    tokenExpiry.value = -1
     user.value = null
     roles.value = []
   }
 
-  const apiHealth = ref<boolean | null>(null)
-
-  const checkApiHealth = async (): Promise<boolean> => {
-    try {
-      const { data } = await useAxiosInstance().get<{
-        status: string
-      }>('actuator/health')
-      apiHealth.value = data.status === 'UP'
-    } catch (e: any) {
-      console.error(e)
-      apiHealth.value = e?.response?.status === 401
-    }
-
-    return apiHealth.value
-  }
-
   return {
-    apiHealth,
-    checkApiHealth,
     fetchUser,
     isAdmin,
     isWeixin,
@@ -68,6 +45,7 @@ export const useStore = defineStore('app', () => {
     logout,
     roles,
     token,
+    tokenExpiry,
     user
   }
 })
