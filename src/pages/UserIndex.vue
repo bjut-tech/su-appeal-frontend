@@ -117,14 +117,6 @@ const { data: count } = useAxios<{
     <van-cell-group inset>
       <van-cell
         icon-prefix="bi"
-        icon="bug"
-        title="遇到问题？"
-        center
-        is-link
-        to="/about/feedback"
-      />
-      <van-cell
-        icon-prefix="bi"
         icon="info-circle"
         title="关于"
         center
