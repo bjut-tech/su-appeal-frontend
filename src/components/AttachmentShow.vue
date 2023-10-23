@@ -26,7 +26,9 @@ const files = computed<Attachment[]>(() => {
 const onPreview = (index?: number): void => {
   showImagePreview({
     images: images.value,
-    startPosition: index ?? 0
+    startPosition: index ?? 0,
+    loop: false,
+    doubleScale: false
   })
 }
 

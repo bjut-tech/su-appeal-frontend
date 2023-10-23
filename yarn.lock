@@ -2460,10 +2460,10 @@ util-deprecate@^1.0.2:
   resolved "https://registry.yarnpkg.com/util-deprecate/-/util-deprecate-1.0.2.tgz#450d4dc9fa70de732762fbd2d4a28981419a0ccf"
   integrity sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==
 
-vant@^4.7.0:
-  version "4.7.0"
-  resolved "https://registry.yarnpkg.com/vant/-/vant-4.7.0.tgz#bb00e9335076b816496b30d64dfd3b6f01f52d46"
-  integrity sha512-oAKfVVfspsRg4MkemGMFm92MXnZb0h8RyvqonPKQkoCMDbMmZvRYmWDfXmfxOnOXVCW308Cqp5HDoDIlcMc3Ag==
+vant@^4.7.2:
+  version "4.7.2"
+  resolved "https://registry.yarnpkg.com/vant/-/vant-4.7.2.tgz#cf354a45d44d66c76a9dd14aff53f019da7bae35"
+  integrity sha512-rRVyEA8HwDKaHDLnT8x9pHv2bYfziKO76yH13Us2aUMEhx5AM/rNDJIMz0mn4G4pTKRR/UTkuqk3kVFf1Mn0wA==
   dependencies:
     "@vant/popperjs" "^1.3.0"
     "@vant/use" "^1.6.0"

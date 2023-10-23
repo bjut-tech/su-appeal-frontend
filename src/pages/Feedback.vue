@@ -4,7 +4,14 @@ import { showImagePreview } from 'vant'
 import qrWechat from '../assets/images/wechat.svg?inline'
 
 const showQrWechat = (): void => {
-  showImagePreview([qrWechat])
+  showImagePreview({
+    images: [qrWechat],
+    showIndex: false,
+    loop: false,
+    doubleScale: false,
+    maxZoom: 1,
+    closeable: true
+  })
 }
 </script>
 
