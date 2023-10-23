@@ -20,6 +20,7 @@ import {
   TabbarItem
 } from 'vant'
 
+import { injectAnalytics } from './lib/analytics'
 import router from './lib/router'
 
 import App from './App.vue'
@@ -73,3 +74,5 @@ app.use(Tabbar)
 app.use(TabbarItem)
 
 app.mount('#app')
+
+injectAnalytics()

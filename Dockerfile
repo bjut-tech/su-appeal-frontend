@@ -3,6 +3,9 @@ FROM node:lts as builder
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
+ARG VITE_ANALYTICS_CF_TOKEN
+ENV VITE_ANALYTICS_CF_TOKEN=${VITE_ANALYTICS_CF_TOKEN}
+
 WORKDIR /usr/src/app
 
 # Install project dependencies

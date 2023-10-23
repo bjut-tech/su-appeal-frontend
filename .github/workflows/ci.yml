@@ -45,6 +45,7 @@ jobs:
           context: .
           build-args: |
             VITE_API_URL=${{ secrets.API_URL }}
+            VITE_ANALYTICS_CF_TOKEN=${{ secrets.CF_ANALYTICS_TOKEN }}
           push: true
           tags: |
             registry.cn-beijing.aliyuncs.com/jingbh/bjut-su-appeal:nginx
