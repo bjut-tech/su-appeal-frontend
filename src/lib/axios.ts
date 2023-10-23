@@ -21,21 +21,21 @@ export const useAxiosInstance = (): AxiosInstance => {
       return config
     })
 
-    instance.interceptors.response.use(null, (e: AxiosError) => {
-      if (!e.response) {
+    instance.interceptors.response.use(undefined, (error: AxiosError) => {
+      if (!error?.response?.status || error.response.status >= 502) {
         showNotify({
           type: 'danger',
           message: '无法连接到服务器'
         })
-      } else if (e?.response?.status === 401 && !e?.config?.url?.includes('token')) {
+      } else if (error?.response?.status === 401 && !error?.config?.url?.includes('token')) {
         useStore().logout()
         showNotify({
           type: 'warning',
           message: '登录状态失效，请重新登录'
         })
-      } else {
-        Promise.reject(e)
       }
+
+      throw error
     })
   }
 
