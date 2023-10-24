@@ -5,6 +5,7 @@ export interface Question {
   id: number
   user: User
   contact: string
+  campus: string
   content: string
   attachments: Attachment[]
   answer: Answer | null

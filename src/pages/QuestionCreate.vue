@@ -5,14 +5,18 @@ import { useLocalStorage } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import { showToast, showConfirmDialog } from 'vant'
 import type { AxiosError } from 'axios'
+import type { PickerConfirmEventParams } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
+import AttachmentUpload from '../components/AttachmentUpload.vue'
+import { campusOptions, getCampusName } from '../types/Campus'
 import type { Attachment } from '../types/Attachment'
 import type { Question } from '../types/Question'
-import AttachmentUpload from '../components/AttachmentUpload.vue'
 
 interface Form {
+  contact: string
+  campus: string
   content: string
   attachments: Attachment[]
 }
@@ -23,9 +27,10 @@ const router = useRouter()
 
 const uid = ref<string>('')
 const name = ref<string>('')
-const contact = useLocalStorage('user_contact', '')
 
 const initialForm = (): Form => ({
+  contact: '',
+  campus: '',
   content: '',
   attachments: []
 })
@@ -36,6 +41,14 @@ const draft = useLocalStorage<Form | null>('draft_question', initialForm(), {
 
 const form = ref<Form>(initialForm())
 const errors = ref<Record<string, string>>({})
+
+const showCampusPicker = ref(false)
+
+const onConfirmCampus = (e: PickerConfirmEventParams): void => {
+  form.value.campus = e.selectedValues[0] as string
+  showCampusPicker.value = false
+  errors.value.campus = ''
+}
 
 const {
   isLoading,
@@ -65,7 +78,8 @@ const submit = (): void => {
       data: {
         uid: store.user?.uid ?? uid.value,
         name: store.user?.name ?? name.value,
-        contact: contact.value,
+        contact: form.value.contact,
+        campus: form.value.campus,
         content: form.value.content,
         attachmentIds: form.value.attachments.map((attachment) => attachment.id)
       }
@@ -131,7 +145,7 @@ onBeforeUnmount(() => {
         autocomplete="name"
       />
       <van-field
-        v-model="contact"
+        v-model="form.contact"
         type="text"
         label="联系方式"
         placeholder="请输入联系方式（手机号或微信号等）"
@@ -142,9 +156,31 @@ onBeforeUnmount(() => {
       />
     </van-cell-group>
     <van-cell-group
-      title="正文"
+      title="反馈内容"
       inset
     >
+      <van-field
+        label="所在校区"
+        placeholder="请选择所在校区"
+        :model-value="getCampusName(form.campus)"
+        is-link
+        readonly
+        :error="!!errors.campus"
+        :error-message="errors.campus"
+        @click="showCampusPicker = true"
+      />
+      <van-popup
+        v-model:show="showCampusPicker"
+        round
+        position="bottom"
+      >
+        <van-picker
+          title="选择所在校区"
+          :columns="campusOptions"
+          @cancel="showCampusPicker = false"
+          @confirm="onConfirmCampus"
+        />
+      </van-popup>
       <van-field
         v-model="form.content"
         type="textarea"

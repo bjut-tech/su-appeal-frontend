@@ -14,6 +14,8 @@ import {
   List,
   Loading,
   NavBar,
+  Picker,
+  Popup,
   Progress,
   PullRefresh,
   Tabbar,
@@ -40,6 +42,8 @@ import 'vant/es/list/style'
 import 'vant/es/loading/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/notify/style'
+import 'vant/es/picker/style'
+import 'vant/es/popup/style'
 import 'vant/es/progress/style'
 import 'vant/es/pull-refresh/style'
 import 'vant/es/tabbar/style'
@@ -68,6 +72,8 @@ app.use(Lazyload)
 app.use(List)
 app.use(Loading)
 app.use(NavBar)
+app.use(Picker)
+app.use(Popup)
 app.use(Progress)
 app.use(PullRefresh)
 app.use(Tabbar)

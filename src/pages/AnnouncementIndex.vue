@@ -140,6 +140,12 @@ const goCreate = (): void => {
           v-text="item.content"
         />
         <attachment-show :attachments="item.attachments" />
+        <p
+          v-if="item.user"
+          class="text-xs text-gray-500 dark:text-neutral-400"
+        >
+          发布者：{{ item.user.name ?? item.user.uid }}
+        </p>
       </div>
       <div
         v-if="store.isAdmin"

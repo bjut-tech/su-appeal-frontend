@@ -6,6 +6,7 @@ import { showConfirmDialog, showToast } from 'vant'
 import { useAxiosInstance } from '../lib/axios'
 import { formatTime } from '../utils/datetime'
 import AttachmentShow from './AttachmentShow.vue'
+import { getCampusName } from '../types/Campus'
 import type { Question } from '../types/Question'
 
 import avatarPlaceholder from '../assets/images/avatar-placeholder.png?url'
@@ -14,6 +15,7 @@ const props = defineProps<{
   question: Question
   showUser?: boolean
   showPublished?: boolean
+  hideCampus?: boolean
   fullContent?: boolean
   allowAnswer?: boolean
   allowShow?: boolean
@@ -199,6 +201,12 @@ const onDelete = (): void => {
         以及 {{ question.attachments.length }} 个附件
       </p>
       <p
+        v-if="!hideCampus && question.campus"
+        class="text-xs text-gray-500 dark:text-neutral-400"
+      >
+        所在校区：{{ getCampusName(question.campus) }}
+      </p>
+      <p
         v-if="showUser && question.contact"
         class="text-xs text-gray-500 dark:text-neutral-400"
       >
@@ -239,6 +247,12 @@ const onDelete = (): void => {
         class="text-xs text-gray-500 dark:text-neutral-400"
       >
         以及 {{ question.answer.attachments.length }} 个附件
+      </p>
+      <p
+        v-if="question.answer.user"
+        class="text-xs text-gray-500 dark:text-neutral-400"
+      >
+        回复者：{{ question.answer.user.name ?? question.answer.user.uid }}
       </p>
     </div>
     <div
