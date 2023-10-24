@@ -7,14 +7,7 @@ export interface Announcement {
   title: string
   content: string
   attachments: Attachment[]
+  pinned: boolean
   createdAt: string
   updatedAt: string
-}
-
-export interface AnnouncementShow {
-  id: number
-  title: string
-  content: string
-  attachments: Attachment[]
-  createdAt: string
 }

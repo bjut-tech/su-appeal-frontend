@@ -8,13 +8,61 @@ import { useStore } from '../lib/store'
 import { formatDate } from '../utils/datetime'
 import AttachmentShow from '../components/AttachmentShow.vue'
 import PaginatedList from '../components/PaginatedList.vue'
-import type { AnnouncementShow } from '../types/Announcement'
+import type { Announcement } from '../types/Announcement'
 
 const store = useStore()
 
 const router = useRouter()
 
-const list = ref<AnnouncementShow[]>([])
+const list = ref<Announcement[]>([])
+
+const onPin = (id: number): void => {
+  useAxiosInstance()
+    .post(`announcements/${id}/pin`)
+    .then(() => {
+      showToast({
+        type: 'success',
+        message: '置顶成功'
+      })
+      list.value = list.value.map((item) => {
+        if (item.id === id) {
+          item.pinned = true
+        }
+        return item
+      })
+    })
+    .catch((e) => {
+      console.error(e)
+      showToast({
+        type: 'fail',
+        message: '置顶失败'
+      })
+    })
+}
+
+const onUnpin = (id: number): void => {
+  useAxiosInstance()
+    .post(`announcements/${id}/unpin`)
+    .then(() => {
+      showToast({
+        type: 'success',
+        message: '取消置顶成功'
+      })
+      list.value = list.value.map((item) => {
+        if (item.id === id) {
+          item.pinned = false
+        }
+        return item
+      })
+    })
+    .catch((e) => {
+      console.error(e)
+      showToast({
+        type: 'fail',
+        message: '取消置顶失败'
+      })
+    })
+}
 
 const onDelete = (id: number): void => {
   showConfirmDialog({
@@ -78,6 +126,10 @@ const goCreate = (): void => {
             class="flex-1 font-semibold"
             v-text="item.title"
           />
+          <i
+            v-if="item.pinned"
+            class="bi bi-pin-angle-fill flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
+          />
           <span
             class="flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
             v-text="formatDate(item.createdAt)"
@@ -93,6 +145,28 @@ const goCreate = (): void => {
         v-if="store.isAdmin"
         class="flex justify-end px-4 py-3 gap-3 border-t border-gray-200 dark:border-neutral-800"
       >
+        <van-button
+          v-if="item.pinned"
+          type="danger"
+          size="small"
+          plain
+          icon-prefix="bi"
+          icon="pin"
+          @click="onUnpin(item.id)"
+        >
+          取消置顶
+        </van-button>
+        <van-button
+          v-else
+          type="success"
+          size="small"
+          plain
+          icon-prefix="bi"
+          icon="pin-angle"
+          @click="onPin(item.id)"
+        >
+          置顶
+        </van-button>
         <van-button
           type="danger"
           size="small"

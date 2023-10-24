@@ -29,7 +29,11 @@ const onLoad = (): void => {
       cursor: cursor.value
     }
   }).then(({ data }) => {
-    emit('update:modelValue', [...props.modelValue, ...data.data])
+    emit('update:modelValue', [
+      ...(data.pinned ?? []),
+      ...props.modelValue,
+      ...data.data
+    ])
     cursor.value = data.cursor
 
     if (!data.cursor) {
