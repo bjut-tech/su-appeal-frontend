@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
 import { ref } from 'vue'
+import type { ListInstance } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import type { CursorPagination } from '../types/pagination'
@@ -14,6 +15,9 @@ const props = defineProps<{
 const emit = defineEmits([
   'update:modelValue'
 ])
+
+const listComponent = ref<ListInstance | null>(null)
+const check = (): void => listComponent.value?.check()
 
 const axios = useAxiosInstance()
 
@@ -66,6 +70,7 @@ const onRefresh = (): void => {
     @refresh="onRefresh"
   >
     <van-list
+      ref="listComponent"
       v-model:loading="loading"
       v-model:error="error"
       :class="customClass"
@@ -75,11 +80,12 @@ const onRefresh = (): void => {
       error-text="请求失败，点击重新加载"
       @load="onLoad"
     >
-      <slot />
+      <slot :check="check" />
     </van-list>
   </van-pull-refresh>
   <van-list
     v-else
+    ref="listComponent"
     v-model:loading="loading"
     v-model:error="error"
     :class="customClass"
@@ -89,6 +95,6 @@ const onRefresh = (): void => {
     error-text="请求失败，点击重新加载"
     @load="onLoad"
   >
-    <slot />
+    <slot :check="check" />
   </van-list>
 </template>

@@ -5,12 +5,12 @@ import { useLocalStorage } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import { showToast, showConfirmDialog } from 'vant'
 import type { AxiosError } from 'axios'
-import type { PickerConfirmEventParams } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
-import { campusOptions, getCampusName } from '../types/Campus'
+import CampusSelect from '../components/CampusSelect.vue'
+import { getCampusName } from '../types/Campus'
 import type { Attachment } from '../types/Attachment'
 import type { Question } from '../types/Question'
 
@@ -41,14 +41,6 @@ const draft = useLocalStorage<Form | null>('draft_question', initialForm(), {
 
 const form = ref<Form>(initialForm())
 const errors = ref<Record<string, string>>({})
-
-const showCampusPicker = ref(false)
-
-const onConfirmCampus = (e: PickerConfirmEventParams): void => {
-  form.value.campus = e.selectedValues[0] as string
-  showCampusPicker.value = false
-  errors.value.campus = ''
-}
 
 const {
   isLoading,
@@ -159,28 +151,21 @@ onBeforeUnmount(() => {
       title="反馈内容"
       inset
     >
-      <van-field
-        label="所在校区"
-        placeholder="请选择所在校区"
-        :model-value="getCampusName(form.campus)"
-        is-link
-        readonly
-        :error="!!errors.campus"
-        :error-message="errors.campus"
-        @click="showCampusPicker = true"
-      />
-      <van-popup
-        v-model:show="showCampusPicker"
-        round
-        position="bottom"
+      <campus-select
+        v-slot="{ trigger }"
+        v-model="form.campus"
       >
-        <van-picker
-          title="选择所在校区"
-          :columns="campusOptions"
-          @cancel="showCampusPicker = false"
-          @confirm="onConfirmCampus"
+        <van-field
+          label="所在校区"
+          placeholder="请选择所在校区"
+          :model-value="getCampusName(form.campus)"
+          is-link
+          readonly
+          :error="!!errors.campus"
+          :error-message="errors.campus"
+          @click="trigger()"
         />
-      </van-popup>
+      </campus-select>
       <van-field
         v-model="form.content"
         type="textarea"
