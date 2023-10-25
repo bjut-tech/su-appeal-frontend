@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { formatTime } from '../utils/datetime'
+import truncate from '../utils/truncate'
 import AttachmentShow from './AttachmentShow.vue'
+import CollapseParagraph from './CollapseParagraph.vue'
 import { getCampusName } from '../types/Campus'
 import type { Question } from '../types/Question'
 
@@ -33,30 +34,6 @@ const emit = defineEmits([
 const router = useRouter()
 
 const axios = useAxiosInstance()
-
-const content = computed(() => {
-  if (props.fullContent) {
-    return props.question.content
-  }
-
-  return props.question.content.length > 300
-    ? `${props.question.content.slice(0, 297)}...`
-    : props.question.content
-})
-
-const answerContent = computed(() => {
-  if (!props.question.answer) {
-    return ''
-  }
-
-  if (props.fullContent) {
-    return props.question.answer.content
-  }
-
-  return props.question.answer.content.length > 300
-    ? `${props.question.answer.content.slice(0, 297)}...`
-    : props.question.answer.content
-})
 
 const onShow = (): void => {
   if (!props.allowShow) {
@@ -185,10 +162,17 @@ const onDelete = (): void => {
           >未答复</span>
         </div>
       </div>
+      <collapse-paragraph
+        v-if="fullContent"
+        class="text-sm text-gray-600 dark:text-neutral-300"
+        :text="question.content"
+        :limit="1000"
+      />
       <p
+        v-else
         class="text-sm text-gray-600 dark:text-neutral-300"
         :class="{ 'whitespace-pre-wrap': fullContent }"
-        v-text="content"
+        v-text="truncate(question.content)"
       />
       <attachment-show
         v-if="fullContent"
@@ -234,9 +218,16 @@ const onDelete = (): void => {
           </template>
         </div>
       </div>
+      <collapse-paragraph
+        v-if="fullContent"
+        class="text-sm text-gray-600 dark:text-neutral-300"
+        :text="question.answer.content"
+        :limit="1000"
+      />
       <p
+        v-else
         class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
-        v-text="answerContent"
+        v-text="truncate(question.answer.content)"
       />
       <attachment-show
         v-if="fullContent"
@@ -266,7 +257,7 @@ const onDelete = (): void => {
         plain
         @click="onShow"
       >
-        查看详情 / 回复
+        查看详情{{ allowAnswer ? ' / 回复' : '' }}
       </van-button>
       <template v-if="allowPublish">
         <van-button

@@ -7,6 +7,7 @@ import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 import { formatDate } from '../utils/datetime'
 import AttachmentShow from '../components/AttachmentShow.vue'
+import CollapseParagraph from '../components/CollapseParagraph.vue'
 import PaginatedList from '../components/PaginatedList.vue'
 import type { Announcement } from '../types/Announcement'
 
@@ -135,9 +136,9 @@ const goCreate = (): void => {
             v-text="formatDate(item.createdAt)"
           />
         </div>
-        <p
-          class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
-          v-text="item.content"
+        <collapse-paragraph
+          class="text-sm text-gray-600 dark:text-neutral-300"
+          :text="item.content"
         />
         <attachment-show :attachments="item.attachments" />
         <p
