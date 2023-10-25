@@ -9,7 +9,6 @@ import AdminServerStatus from '../pages/AdminServerStatus.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
 import Feedback from '../pages/Feedback.vue'
-import Home from '../pages/Home.vue'
 import NotFound from '../pages/NotFound.vue'
 import QuestionCreate from '../pages/QuestionCreate.vue'
 import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
@@ -28,7 +27,7 @@ declare module 'vue-router' {
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: Home
+    redirect: '/announcements'
   },
   {
     path: '/about',
