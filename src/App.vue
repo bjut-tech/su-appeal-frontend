@@ -24,7 +24,7 @@ const isTabBarRoute = computed(() => {
 
 const hasTitle = computed(() => !!route.meta.title)
 const title = computed<string>(() => {
-  return route.meta?.title ?? '学生权益墙'
+  return route.meta?.title ?? '信息学部权益墙'
 })
 
 const isNotHome = computed(() => {

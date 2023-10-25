@@ -64,7 +64,7 @@ const routes: RouteRecordRaw[] = [
     path: '/announcements',
     component: AnnouncementIndex,
     meta: {
-      title: '权益墙公告栏'
+      title: '信息学部权益墙'
     }
   },
   {
@@ -190,7 +190,12 @@ router.afterEach((to) => {
 
   if (store.isWeixin) {
     nextTick(() => {
-      document.title = to.meta?.title ?? '学生权益墙'
+      const appTitle = '信息学部权益墙'
+      if (to.meta?.title && to.meta.title !== appTitle) {
+        document.title = `${to.meta.title} - ${appTitle}`
+      } else {
+        document.title = appTitle
+      }
     })
   }
 })

@@ -30,7 +30,7 @@ const version = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-center gap-8 py-20">
+  <div class="flex flex-col items-center gap-8 px-4 py-20">
     <div class="flex gap-4 items-stretch">
       <van-image
         class="w-32 h-32 bg-white"
@@ -41,7 +41,7 @@ const version = computed(() => {
     </div>
     <div class="flex flex-col items-center gap-2">
       <h1 class="text-2xl">
-        <span class="font-bold">学生权益墙</span>
+        <span class="font-bold">信息学部权益墙</span>
         <span
           v-if="version"
           class="ml-2 text-sm text-gray-500 dark:text-neutral-400"
@@ -49,7 +49,7 @@ const version = computed(() => {
         />
       </h1>
       <p class="text-gray-500 dark:text-neutral-400">
-        信息学部学生会学生权益部
+        北京工业大学信息学部学生会学生权益部
       </p>
     </div>
   </div>
