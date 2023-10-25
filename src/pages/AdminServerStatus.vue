@@ -13,7 +13,7 @@ const {
   cpuUsage: number
   memoryUsage: number
   memoryUsed: number
-  memoryMax: number
+  memoryTotal: number
   diskUsage: number
   diskFree: number
   diskTotal: number
@@ -94,7 +94,7 @@ useIntervalFn(() => {
         class="flex justify-between gap-2 text-xs text-gray-500 dark:text-neutral-400"
       >
         <p>已用 {{ filesize(data.memoryUsed) }}</p>
-        <p>共 {{ filesize(data.memoryMax) }}</p>
+        <p>共 {{ filesize(data.memoryTotal) }}</p>
       </div>
     </div>
 
