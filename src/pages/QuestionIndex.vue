@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useAxios } from '@vueuse/integrations/useAxios'
 
+import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
 import CampusSelect from '../components/CampusSelect.vue'
 import PaginatedList from '../components/PaginatedList.vue'
@@ -15,6 +17,14 @@ defineProps<{
 const store = useStore()
 
 const list = ref<Question[]>([])
+
+const {
+  data: listLiked,
+  execute: fetchListLiked
+} = useAxios<number[]>('questions/liked-answers', useAxiosInstance(), {
+  initialData: [],
+  immediate: false
+})
 
 const filterCampus = ref<string>('')
 const filterSearch = ref<string>('')
@@ -56,9 +66,45 @@ const onUnpublish = (id: number): void => {
   })
 }
 
+const onLike = (id: number): void => {
+  if (!listLiked.value) {
+    listLiked.value = []
+  }
+
+  list.value = list.value.map((item) => {
+    if (item.id === id && item.answer) {
+      item.answer.likesCount++
+      listLiked.value?.push(item.answer.id)
+    }
+    return item
+  })
+}
+
+const onUnlike = (id: number): void => {
+  list.value = list.value.map((item) => {
+    if (item.id === id && item.answer) {
+      item.answer.likesCount--
+      if (item.answer.likesCount < 0) {
+        item.answer.likesCount = 0
+      }
+
+      listLiked.value = (listLiked.value ?? []).filter((item1) => {
+        return item1 !== item.answer?.id
+      })
+    }
+    return item
+  })
+}
+
 const onDelete = (id: number): void => {
   list.value = list.value.filter((item) => item.id !== id)
 }
+
+onMounted(() => {
+  if (store.loggedIn) {
+    fetchListLiked()
+  }
+})
 </script>
 
 <template>
@@ -110,6 +156,7 @@ const onDelete = (id: number): void => {
       v-for="item in listFiltered"
       :key="item.id"
       :question="item"
+      :answer-liked="listLiked?.includes(item.answer?.id ?? -1)"
       :show-user="!history && store.isAdmin"
       :show-published="history || store.isAdmin"
       :hide-campus="!!filterCampus"
@@ -120,6 +167,8 @@ const onDelete = (id: number): void => {
       :allow-publish="!history && store.isAdmin && !!item.answer"
       @publish="onPublish(item.id)"
       @unpublish="onUnpublish(item.id)"
+      @like="onLike(item.id)"
+      @unlike="onUnlike(item.id)"
       @delete="onDelete(item.id)"
     />
   </paginated-list>

@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { showConfirmDialog, showToast } from 'vant'
+import { showConfirmDialog, showDialog, showToast } from 'vant'
+import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios'
+import { useStore } from '../lib/store'
 import { formatTime } from '../utils/datetime'
 import truncate from '../utils/truncate'
 import AttachmentShow from './AttachmentShow.vue'
@@ -14,6 +17,7 @@ import avatarPlaceholder from '../assets/images/avatar-placeholder.png?url'
 
 const props = defineProps<{
   question: Question
+  answerLiked?: boolean
   showUser?: boolean
   showPublished?: boolean
   hideCampus?: boolean
@@ -28,12 +32,18 @@ const emit = defineEmits([
   'show',
   'delete',
   'publish',
-  'unpublish'
+  'unpublish',
+  'like',
+  'unlike'
 ])
+
+const store = useStore()
 
 const router = useRouter()
 
-const axios = useAxiosInstance()
+const showLike = computed(() => {
+  return props.question.answer && props.question.published
+})
 
 const onShow = (): void => {
   if (!props.allowShow) {
@@ -53,7 +63,8 @@ const onPublish = (): void => {
     title: '注意',
     message: '确定要公布这则反馈及其回复吗？'
   }).then(() => {
-    axios.post(`questions/${props.question.id}/publish`)
+    useAxiosInstance()
+      .post(`questions/${props.question.id}/publish`)
       .then(() => {
         showToast({
           type: 'success',
@@ -76,7 +87,8 @@ const onUnpublish = (): void => {
     return
   }
 
-  axios.post(`questions/${props.question.id}/unpublish`)
+  useAxiosInstance()
+    .delete(`questions/${props.question.id}/publish`)
     .then(() => {
       showToast({
         type: 'success',
@@ -103,7 +115,8 @@ const onDelete = (): void => {
     message: '确定要删除这则反馈吗？',
     confirmButtonColor: '#ee0a24'
   }).then(() => {
-    axios.delete(`questions/${props.question.id}`)
+    useAxiosInstance()
+      .delete(`questions/${props.question.id}`)
       .then(() => {
         showToast({
           type: 'success',
@@ -119,6 +132,48 @@ const onDelete = (): void => {
         })
       })
   })
+}
+
+const onLikeAnswer = (): void => {
+  if (props.answerLiked) {
+    if (!store.loggedIn) {
+      return
+    }
+
+    useAxiosInstance()
+      .delete(`questions/${props.question.id}/answer/like`)
+      .then(() => {
+        emit('unlike')
+      })
+      .catch((e) => {
+        console.error(e)
+        showToast({
+          type: 'fail',
+          message: '操作失败'
+        })
+      })
+  } else {
+    useAxiosInstance()
+      .post(`questions/${props.question.id}/answer/like`)
+      .then(() => {
+        emit('like')
+      })
+      .catch((e: AxiosError) => {
+        if (e?.response?.status === 429 && !store.loggedIn) {
+          showDialog({
+            title: '注意',
+            message: '匿名用户不能频繁点赞，请登录后再试'
+          })
+          return
+        }
+
+        console.error(e)
+        showToast({
+          type: 'fail',
+          message: '操作失败'
+        })
+      })
+  }
 }
 </script>
 
@@ -247,7 +302,7 @@ const onDelete = (): void => {
       </p>
     </div>
     <div
-      v-if="allowShow || allowPublish || allowDelete"
+      v-if="showLike || allowShow || allowPublish || allowDelete"
       class="flex justify-end items-center px-4 py-3 gap-3 border-t border-gray-200 dark:border-neutral-800"
     >
       <van-button
@@ -258,6 +313,20 @@ const onDelete = (): void => {
         @click="onShow"
       >
         查看详情{{ allowAnswer ? ' / 回复' : '' }}
+      </van-button>
+      <van-button
+        v-if="showLike"
+        type="danger"
+        size="small"
+        plain
+        :disabled="answerLiked && !store.loggedIn"
+        @click="onLikeAnswer"
+      >
+        <i
+          class="bi"
+          :class="{ 'bi-hand-thumbs-up-fill': answerLiked, 'bi-hand-thumbs-up': !answerLiked }"
+        />
+        {{ question.answer?.likesCount ?? 0 }}
       </van-button>
       <template v-if="allowPublish">
         <van-button

@@ -24,21 +24,31 @@ const store = useStore()
 
 const axios = useAxiosInstance()
 
+const loading = ref(false)
 const question = ref<Question | null>(null)
+const liked = ref(false)
 
 const fetchData = (): void => {
+  loading.value = true
   question.value = null
 
-  axios.get<Question>(`/questions/${route.params.id}`)
+  axios.get<Question>(`questions/${route.params.id}`)
     .then(({ data }) => {
       question.value = data
       answerForm.value = {
         content: data.answer?.content ?? '',
         attachments: data.answer?.attachments ?? []
       }
+      axios.get<number[]>('questions/liked-answers')
+        .then(({ data: data1 }) => {
+          liked.value = data1.includes(data.answer?.id ?? -1)
+        })
+        .catch(console.error)
+        .finally(() => (loading.value = false))
     })
     .catch((e: AxiosError) => {
       console.error(e)
+      loading.value = false
       if (e?.response?.status === 404 || e?.response?.status === 401) {
         router.replace('/not-found')
       } else {
@@ -51,6 +61,23 @@ const fetchData = (): void => {
         })
       }
     })
+}
+
+const onLike = (): void => {
+  if (question.value?.answer) {
+    question.value.answer.likesCount++
+  }
+  liked.value = true
+}
+
+const onUnlike = (): void => {
+  if (question.value?.answer) {
+    question.value.answer.likesCount--
+    if (question.value.answer.likesCount < 0) {
+      question.value.answer.likesCount = 0
+    }
+  }
+  liked.value = false
 }
 
 const onDelete = (): void => {
@@ -137,12 +164,13 @@ onMounted(() => {
 
 <template>
   <div
-    v-if="question"
+    v-if="question && !loading"
     class="flex flex-col items-stretch py-6"
   >
     <question-show-component
       class="mx-4"
       :question="question"
+      :answer-liked="liked"
       :show-user="store.isAdmin"
       :show-published="store.isAdmin"
       full-content
@@ -150,6 +178,8 @@ onMounted(() => {
       :allow-delete="!question.published && (store.isAdmin || question.user?.id === store.user?.id)"
       @publish="fetchData"
       @unpublish="fetchData"
+      @like="onLike"
+      @unlike="onUnlike"
       @delete="onDelete"
     />
 

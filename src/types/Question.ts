@@ -19,6 +19,7 @@ export interface Answer {
   user: User
   content: string
   attachments: Attachment[]
+  likesCount: number
   createdAt: string
   updatedAt: string
 }

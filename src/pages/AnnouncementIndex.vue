@@ -43,7 +43,7 @@ const onPin = (id: number): void => {
 
 const onUnpin = (id: number): void => {
   useAxiosInstance()
-    .post(`announcements/${id}/unpin`)
+    .delete(`announcements/${id}/pin`)
     .then(() => {
       showToast({
         type: 'success',
