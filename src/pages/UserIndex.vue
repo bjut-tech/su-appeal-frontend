@@ -71,7 +71,7 @@ const { data: count } = useAxios<{
         title="回复反馈"
         center
         is-link
-        to="/questions"
+        to="/questions?status=unreplied"
       >
         <template #value>
           <span
