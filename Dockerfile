@@ -16,6 +16,6 @@ RUN yarn install --frozen-lockfile
 COPY . /usr/src/app/
 RUN yarn build
 
-FROM nginx
+FROM caddy:2
 
-COPY --from=builder /usr/src/app/dist /var/www/html
+COPY --from=builder /usr/src/app/dist /srv

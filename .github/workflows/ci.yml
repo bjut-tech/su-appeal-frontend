@@ -48,6 +48,6 @@ jobs:
             VITE_ANALYTICS_CF_TOKEN=${{ secrets.CF_ANALYTICS_TOKEN }}
           push: true
           tags: |
-            registry.cn-beijing.aliyuncs.com/jingbh/bjut-su-appeal:nginx
+            registry.cn-beijing.aliyuncs.com/jingbh/bjut-su-appeal:frontend
           cache-from: type=gha
           cache-to: type=gha,mode=max
