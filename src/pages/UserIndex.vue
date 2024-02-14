@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAxios } from '@vueuse/integrations/useAxios'
+import { showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
@@ -14,6 +15,20 @@ const { data: count } = useAxios<{
 }>('questions/count', useAxiosInstance(), {
   immediate: true
 })
+
+const redirect = (): void => {
+  useAxiosInstance().get<{
+    url: string
+  }>('token/redirect').then(({ data }) => {
+    location.href = data.url
+  }).catch((e) => {
+    console.error(e)
+    showToast({
+      type: 'fail',
+      message: '无法获取登录链接'
+    })
+  })
+}
 </script>
 
 <template>
@@ -50,7 +65,7 @@ const { data: count } = useAxios<{
         title="登录"
         center
         is-link
-        to="/login"
+        @click="redirect"
       />
     </van-cell-group>
 

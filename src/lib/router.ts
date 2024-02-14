@@ -16,6 +16,7 @@ import QuestionIndex from '../pages/QuestionIndex.vue'
 import QuestionShow from '../pages/QuestionShow.vue'
 import UserIndex from '../pages/UserIndex.vue'
 import UserLogin from '../pages/UserLogin.vue'
+import UserLoginCallback from '../pages/UserLoginCallback.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -77,6 +78,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/login',
     component: UserLogin,
+    meta: {
+      title: '登录'
+    }
+  },
+  {
+    path: '/login/callback',
+    component: UserLoginCallback,
     meta: {
       title: '登录'
     }

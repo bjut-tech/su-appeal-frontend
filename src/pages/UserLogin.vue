@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
+import type { TokenResponse } from '../types/login.ts'
 
 const store = useStore()
 
@@ -27,11 +28,7 @@ const submit = (): void => {
     return
   }
 
-  useAxiosInstance().post<{
-    access_token: string
-    expires_in: number
-    token_type: 'Bearer'
-  }>('token', form, {
+  useAxiosInstance().post<TokenResponse>('token', form, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
