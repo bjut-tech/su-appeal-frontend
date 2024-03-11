@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="flex flex-col items-stretch pb-6">
     <van-cell-group
-      title="个人信息"
+      title="个人信息（非必填）"
       inset
     >
       <van-field
