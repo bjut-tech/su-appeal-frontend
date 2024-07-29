@@ -1,7 +1,7 @@
-import { nextTick } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
+import { useSchool } from './school'
 import { useStore } from './store'
 import About from '../pages/About.vue'
 import AdminAdminList from '../pages/AdminAdminList.vue'
@@ -14,6 +14,7 @@ import QuestionCreate from '../pages/QuestionCreate.vue'
 import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
 import QuestionIndex from '../pages/QuestionIndex.vue'
 import QuestionShow from '../pages/QuestionShow.vue'
+import SchoolSwitch from '../pages/SchoolSwitch.vue'
 import UserIndex from '../pages/UserIndex.vue'
 import UserLogin from '../pages/UserLogin.vue'
 
@@ -63,7 +64,7 @@ const routes: RouteRecordRaw[] = [
     path: '/announcements',
     component: AnnouncementIndex,
     meta: {
-      title: '信息学部权益墙'
+      title: '{school}权益墙'
     }
   },
   {
@@ -111,6 +112,13 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/schools',
+    component: SchoolSwitch,
+    meta: {
+      title: '切换学院'
+    }
+  },
+  {
     path: '/user',
     component: UserIndex,
     meta: {
@@ -137,6 +145,18 @@ const routes: RouteRecordRaw[] = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+/**
+ * Format page title
+ */
+router.beforeEach((to) => {
+  if (to.meta?.title) {
+    while (to.meta.title.includes('{school}')) {
+      to.meta.title = to.meta.title.replace('{school}', useSchool().value.name)
+    }
+  }
+  return true
 })
 
 /**
@@ -185,17 +205,14 @@ router.beforeEach(async (to) => {
  * Change page title
  */
 router.afterEach((to) => {
+  const school = useSchool()
   const store = useStore()
 
-  if (store.isWeixin) {
-    nextTick(() => {
-      const appTitle = '信息学部权益墙'
-      if (to.meta?.title && to.meta.title !== appTitle) {
-        document.title = `${to.meta.title} - ${appTitle}`
-      } else {
-        document.title = appTitle
-      }
-    })
+  const appTitle = school.value.name + '权益墙'
+  if (store.isWeixin && to.meta?.title && to.meta.title !== appTitle) {
+    document.title = `${to.meta.title} - ${appTitle}`
+  } else {
+    document.title = appTitle
   }
 })
 

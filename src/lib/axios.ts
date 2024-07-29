@@ -8,7 +8,7 @@ let instance: AxiosInstance | null = null
 export const useAxiosInstance = (): AxiosInstance => {
   if (instance === null) {
     instance = axios.create({
-      baseURL: import.meta.env.VITE_API_URL
+      baseURL: '/api'
     })
 
     instance.interceptors.request.use((config) => {

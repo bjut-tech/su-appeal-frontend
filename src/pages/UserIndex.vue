@@ -90,6 +90,14 @@ const { data: count } = useAxios<{
         :to="store.loggedIn ? '/user/history' : ''"
         :aria-disabled="!store.loggedIn"
       />
+      <van-cell
+        icon-prefix="bi"
+        icon="arrow-left-right"
+        title="切换学院"
+        center
+        is-link
+        to="/schools"
+      />
     </van-cell-group>
 
     <van-cell-group

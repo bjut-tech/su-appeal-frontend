@@ -2,8 +2,11 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+import { useSchool } from '../lib/school'
 import { useAxiosInstance } from '../lib/axios'
 import { useStore } from '../lib/store'
+
+const school = useSchool()
 
 const store = useStore()
 
@@ -63,14 +66,18 @@ const submit = (): void => {
 
 <template>
   <div class="flex flex-col items-stretch mx-4 py-6 gap-4">
-    <h1 class="text-2xl font-semibold text-center">
-      统一身份认证登录
-    </h1>
-    <!--<img
-      src="../assets/images/bjut-fit-logo-horizontal.png"
+    <img
+      v-if="school.logoHorizontal"
+      :src="school.logoHorizontal"
       alt="logo"
       class="mx-auto h-[4.5rem] mt-4 mb-6"
-    >-->
+    >
+    <h1
+      v-else
+      class="text-2xl font-semibold text-center"
+    >
+      统一身份认证登录
+    </h1>
     <van-cell-group
       class="!mx-0"
       inset

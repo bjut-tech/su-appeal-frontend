@@ -3,7 +3,10 @@ import { computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDark } from '@vueuse/core'
 
+import { useSchool } from './lib/school'
 import { useStore } from './lib/store'
+
+const school = useSchool()
 
 const store = useStore()
 
@@ -24,7 +27,7 @@ const isTabBarRoute = computed(() => {
 
 const hasTitle = computed(() => !!route.meta.title)
 const title = computed<string>(() => {
-  return route.meta?.title ?? '信息学部权益墙'
+  return route.meta?.title ?? (school.value.name + '权益墙')
 })
 
 const isNotHome = computed(() => {
