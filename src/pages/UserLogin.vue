@@ -66,6 +66,11 @@ const submit = (): void => {
     <h1 class="text-2xl font-semibold text-center">
       统一身份认证登录
     </h1>
+    <!--<img
+      src="../assets/images/bjut-fit-logo-horizontal.png"
+      alt="logo"
+      class="mx-auto h-[4.5rem] mt-4 mb-6"
+    >-->
     <van-cell-group
       class="!mx-0"
       inset
