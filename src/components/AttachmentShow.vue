@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { showImagePreview } from 'vant'
 
-import { getUrl } from '../utils/attachment'
+import { getUrl, getThumbnailUrl } from '../utils/attachment'
 import filesize from '../utils/filesize'
 import { isImage } from '../utils/filetype'
 import type { Attachment } from '../types/Attachment'
@@ -11,10 +11,16 @@ const props = defineProps<{
   attachments: Attachment[]
 }>()
 
-const images = computed<string[]>(() => {
+const images = computed<Array<{
+  url: string
+  thumbnailUrl: string
+}>>(() => {
   return props.attachments.filter((attachment) => {
     return isImage(attachment.name)
-  }).map((attachment) => getUrl(attachment))
+  }).map((attachment) => ({
+    url: getUrl(attachment),
+    thumbnailUrl: getThumbnailUrl(attachment)
+  }))
 })
 
 const files = computed<Attachment[]>(() => {
@@ -25,7 +31,7 @@ const files = computed<Attachment[]>(() => {
 
 const onPreview = (index?: number): void => {
   showImagePreview({
-    images: images.value,
+    images: images.value.map((image) => image.url),
     startPosition: index ?? 0,
     loop: false,
     doubleScale: false
@@ -43,10 +49,10 @@ const onDownload = (attachment: Attachment): void => {
     class="grid grid-cols-3 sm:grid-cols-4 gap-2"
   >
     <van-image
-      v-for="(url, i) in images"
+      v-for="(image, i) in images"
       :key="i"
       class="aspect-square cursor-pointer"
-      :src="url"
+      :src="image.thumbnailUrl"
       block
       fit="cover"
       radius="0.5rem"
