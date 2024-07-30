@@ -21,6 +21,7 @@ import {
   Tabbar,
   TabbarItem
 } from 'vant'
+import '@vant/touch-emulator'
 
 import { injectAnalytics } from './lib/analytics'
 import router from './lib/router'
