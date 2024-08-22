@@ -50,7 +50,7 @@ const version = computed(() => {
         />
       </h1>
       <p class="text-gray-500 dark:text-neutral-400">
-        北京工业大学{{ school.name }}学生会权益部
+        北京工业大学{{ school.name }}学生会生活权益部
       </p>
     </div>
   </div>
