@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAxios } from '@vueuse/integrations/useAxios'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useStore } from '../lib/store.ts'
 
 import avatarPlaceholder from '../assets/images/avatar-placeholder.png?url'
 
@@ -96,6 +96,14 @@ const { data: count } = useAxios<{
       v-if="store.isAdmin"
       inset
     >
+      <van-cell
+        icon-prefix="bi"
+        icon="megaphone"
+        title="公告类别管理"
+        center
+        is-link
+        to="/announcements/categories"
+      />
       <van-cell
         icon-prefix="bi"
         icon="people"

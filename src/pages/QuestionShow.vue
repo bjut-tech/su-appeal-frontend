@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 import type { AxiosError } from 'axios'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useStore } from '../lib/store.ts'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
-import type { Attachment } from '../types/Attachment'
-import type { Question } from '../types/Question'
+import type { Attachment } from '../types/attachment.ts'
+import type { Question } from '../types/question.ts'
 
 interface AnswerForm {
   content: string
@@ -35,9 +35,11 @@ const fetchData = (): void => {
   axios.get<Question>(`questions/${route.params.id}`)
     .then(({ data }) => {
       question.value = data
-      answerForm.value = {
-        content: data.answer?.content ?? '',
-        attachments: data.answer?.attachments ?? []
+      if (data.answer) {
+        answerForm.value = {
+          content: data.answer.content,
+          attachments: data.answer.attachments
+        }
       }
       axios.get<number[]>('questions/liked-answers')
         .then(({ data: data1 }) => {
@@ -159,6 +161,10 @@ onBeforeRouteUpdate(async (to, from) => {
 
 onMounted(() => {
   fetchData()
+})
+
+watch(() => answerForm.value.attachments, (value) => {
+  console.trace(value)
 })
 </script>
 

@@ -3,13 +3,13 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAxios } from '@vueuse/integrations/useAxios'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { getCampusName } from '../lib/campus.ts'
+import { useStore } from '../lib/store.ts'
 import CampusSelect from '../components/CampusSelect.vue'
 import PaginatedList from '../components/PaginatedList.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
-import { getCampusName } from '../types/Campus'
-import type { Question } from '../types/Question'
+import type { Question } from '../types/question.ts'
 
 defineProps<{
   history?: boolean

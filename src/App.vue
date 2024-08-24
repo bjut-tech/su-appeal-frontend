@@ -3,15 +3,16 @@ import { computed, reactive } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useDark } from '@vueuse/core'
 
-import { useSchool } from './lib/school'
-import { useStore } from './lib/store'
+import { useSchool } from './lib/school.ts'
+import { useStore } from './lib/store.ts'
 
 const school = useSchool()
 
 const store = useStore()
 
-const router = useRouter()
 const route = useRoute()
+
+const router = useRouter()
 
 const tabBarRoutes = reactive([
   { path: '/announcements', name: '公告', icon: 'megaphone' },
@@ -19,6 +20,7 @@ const tabBarRoutes = reactive([
   { path: '/questions', name: '答复', icon: 'chat-left-text' },
   { path: '/user', name: '我的', icon: 'person-circle' }
 ])
+
 const isTabBarRoute = computed(() => {
   return tabBarRoutes.some((tabBarRoute) => {
     return route.path === tabBarRoute.path
@@ -26,6 +28,7 @@ const isTabBarRoute = computed(() => {
 })
 
 const hasTitle = computed(() => !!route.meta.title)
+
 const title = computed<string>(() => {
   return route.meta?.title ?? (school.value.name + '权益墙')
 })
@@ -59,6 +62,7 @@ const dark = useDark()
       />
       <router-view />
       <van-tabbar
+        v-if="isTabBarRoute"
         fixed
         placeholder
         route

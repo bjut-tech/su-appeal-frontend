@@ -4,12 +4,12 @@ import { showToast, showConfirmDialog } from 'vant'
 import { UseObjectUrl } from '@vueuse/components'
 import type { AxiosError } from 'axios'
 
-import { getUrl } from '../utils/attachment'
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
-import filesize from '../utils/filesize'
-import { isImage } from '../utils/filetype'
-import type { Attachment } from '../types/Attachment'
+import { getUrl } from '../utils/attachment.ts'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useStore } from '../lib/store.ts'
+import filesize from '../utils/filesize.ts'
+import { isImage } from '../utils/filetype.ts'
+import type { Attachment } from '../types/attachment.ts'
 
 interface AttachmentUploading {
   id: string // temp id
@@ -47,17 +47,18 @@ const files = ref<AttachmentUpload[]>([])
 
 const stopWatchProp = watch(() => props.modelValue, (value) => {
   if (value.length && !files.value.length) {
-    files.value = props.modelValue.map((file) => {
+    files.value = value.map((file) => {
       return Object.assign({}, file, {
         status: 'success'
       }) as AttachmentUploaded
     })
-    stopWatchProp()
   }
+}, {
+  immediate: true
 })
 
 watch(() => files.value, (value) => {
-  if (files.value.length) {
+  if (value.length) {
     stopWatchProp()
   }
 

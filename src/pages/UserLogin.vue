@@ -2,9 +2,9 @@
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { useSchool } from '../lib/school'
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
+import { useSchool } from '../lib/school.ts'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useStore } from '../lib/store.ts'
 
 const school = useSchool()
 

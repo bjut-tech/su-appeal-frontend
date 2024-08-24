@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
-import truncate from '../utils/truncate'
+import truncate from '../utils/truncate.ts'
 
 const props = defineProps<{
   text: string

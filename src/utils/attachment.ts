@@ -1,4 +1,4 @@
-import type { Attachment } from '../types/Attachment'
+import type { Attachment } from '../types/attachment.ts'
 
 export const getUrl = (attachment: Attachment): string => {
   return `/api/attachments/${attachment.id}`

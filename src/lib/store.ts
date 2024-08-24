@@ -3,9 +3,9 @@ import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 import { showToast } from 'vant'
 
-import { useAxiosInstance } from './axios'
-import browsers from '../utils/browser'
-import type { User, UserPrincipal } from '../types/User'
+import { useAxiosInstance } from './axios.ts'
+import browsers from '../utils/browser.ts'
+import type { User, UserPrincipal } from '../types/user.ts'
 
 export const useStore = defineStore('app', () => {
   const isWeixin = ref<boolean>(browsers.isWeixin())
@@ -47,5 +47,15 @@ export const useStore = defineStore('app', () => {
     token,
     tokenExpiry,
     user
+  }
+})
+
+export const useCallbackStore = defineStore('callback', () => {
+  const selectedCategory = ref<number | null>(null)
+  const hasSelectedCategory = ref(false)
+
+  return {
+    selectedCategory,
+    hasSelectedCategory
   }
 })

@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-import { useStore } from '../lib/store'
+import { useStore } from '../lib/store.ts'
 
 const route = useRoute()
 

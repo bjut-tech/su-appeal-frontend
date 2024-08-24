@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import type { PickerConfirmEventParams } from 'vant'
+import { computed, ref } from 'vue'
+import type { ActionSheetAction } from 'vant'
 
-import { campusOptions } from '../types/Campus'
+import { campusOptions } from '../lib/campus.ts'
 
 defineProps<{
   modelValue: string
@@ -12,30 +12,31 @@ const emit = defineEmits([
   'update:modelValue'
 ])
 
-const isShowPicker = ref(false)
+const actions = computed<ActionSheetAction[]>(() => {
+  return campusOptions.map((campus) => ({
+    name: campus.text,
+    callback: () => {
+      emit('update:modelValue', campus.value)
+    }
+  }))
+})
 
-const showPicker = (): void => {
-  isShowPicker.value = true
-}
+const isShow = ref(false)
 
-const onConfirm = (e: PickerConfirmEventParams): void => {
-  emit('update:modelValue', e.selectedValues[0] as string)
-  isShowPicker.value = false
+const show = (): void => {
+  isShow.value = true
 }
 </script>
 
 <template>
-  <slot :trigger="showPicker" />
-  <van-popup
-    v-model:show="isShowPicker"
-    round
-    position="bottom"
-  >
-    <van-picker
-      title="选择校区"
-      :columns="campusOptions"
-      @cancel="isShowPicker = false"
-      @confirm="onConfirm"
-    />
-  </van-popup>
+  <slot :trigger="show" />
+  <van-action-sheet
+    v-model:show="isShow"
+    :closeable="false"
+    title="选择校区"
+    cancel-text="取消"
+    :actions="actions"
+    close-on-click-action
+    safe-area-inset-bottom
+  />
 </template>

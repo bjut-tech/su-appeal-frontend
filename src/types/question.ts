@@ -1,5 +1,5 @@
-import type { Attachment } from './Attachment'
-import type { User } from './User'
+import type { Attachment } from './attachment.ts'
+import type { User } from './user.ts'
 
 export interface Question {
   id: number

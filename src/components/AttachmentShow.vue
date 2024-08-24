@@ -2,10 +2,10 @@
 import { computed } from 'vue'
 import { showImagePreview } from 'vant'
 
-import { getUrl, getThumbnailUrl } from '../utils/attachment'
-import filesize from '../utils/filesize'
-import { isImage } from '../utils/filetype'
-import type { Attachment } from '../types/Attachment'
+import { getUrl, getThumbnailUrl } from '../utils/attachment.ts'
+import filesize from '../utils/filesize.ts'
+import { isImage } from '../utils/filetype.ts'
+import type { Attachment } from '../types/attachment.ts'
 
 const props = defineProps<{
   attachments: Attachment[]
@@ -67,7 +67,7 @@ const onDownload = (attachment: Attachment): void => {
     <div
       v-for="item of files"
       :key="item.id"
-      class="flex items-center py-2 px-3 gap-3 -mx-3 rounded hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer select-none"
+      class="flex items-center py-2 px-4 gap-3 -mx-4 hover:bg-gray-100 dark:hover:bg-neutral-800 cursor-pointer select-none"
       @click="onDownload(item)"
     >
       <div class="flex-shrink-0 flex justify-center items-center text-xl">

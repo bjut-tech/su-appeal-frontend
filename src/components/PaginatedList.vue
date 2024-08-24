@@ -2,8 +2,8 @@
 import { ref } from 'vue'
 import type { ListInstance } from 'vant'
 
-import { useAxiosInstance } from '../lib/axios'
-import type { CursorPagination } from '../types/pagination'
+import { useAxiosInstance } from '../lib/axios.ts'
+import type { CursorPagination } from '../types/pagination.ts'
 
 const props = defineProps<{
   modelValue: T[]

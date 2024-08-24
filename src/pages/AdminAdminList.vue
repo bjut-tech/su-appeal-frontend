@@ -3,7 +3,7 @@ import { useSorted } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import type { Ref } from 'vue'
 
-import { useAxiosInstance } from '../lib/axios'
+import { useAxiosInstance } from '../lib/axios.ts'
 
 const { data, error } = useAxios<string[]>('admin/admins', useAxiosInstance(), {
   immediate: true,
@@ -23,7 +23,7 @@ const dataSorted = useSorted(data as Ref<string[]>)
       />
       <van-cell
         v-if="error"
-        title="加载失败"
+        title="加载管理员列表失败"
         title-class="text-red-600"
       />
     </van-cell-group>

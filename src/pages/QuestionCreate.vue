@@ -6,13 +6,13 @@ import { useAxios } from '@vueuse/integrations/useAxios'
 import { showToast, showConfirmDialog } from 'vant'
 import type { AxiosError } from 'axios'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { getCampusName } from '../lib/campus.ts'
+import { useStore } from '../lib/store.ts'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
 import CampusSelect from '../components/CampusSelect.vue'
-import { getCampusName } from '../types/Campus'
-import type { Attachment } from '../types/Attachment'
-import type { Question } from '../types/Question'
+import type { Attachment } from '../types/attachment.ts'
+import type { Question } from '../types/question.ts'
 
 interface Form {
   contact: string
@@ -118,18 +118,27 @@ onBeforeUnmount(() => {
         v-model="uid"
         type="text"
         label="学号"
-        placeholder="请输入学号"
+        placeholder="匿名用户"
         maxlength="32"
         :disabled="store.loggedIn"
         :error="!!errors.uid"
         :error-message="errors.uid"
         autocomplete="username"
-      />
+      >
+        <template
+          v-if="!store.loggedIn"
+          #extra
+        >
+          <p class="text-xs text-gray-400 dark:text-neutral-500 mt-1">
+            若不填写，则无法查看已提交的反馈内容
+          </p>
+        </template>
+      </van-field>
       <van-field
         v-model="name"
         type="text"
         label="姓名"
-        placeholder="请输入姓名"
+        placeholder="匿名用户"
         maxlength="85"
         :disabled="store.loggedIn"
         :error="!!errors.name"
@@ -140,7 +149,7 @@ onBeforeUnmount(() => {
         v-model="form.contact"
         type="text"
         label="联系方式"
-        placeholder="请输入联系方式（手机号或微信号等）"
+        placeholder="手机号或微信号等"
         maxlength="85"
         :error="!!errors.contact"
         :error-message="errors.contact"

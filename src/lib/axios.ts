@@ -1,8 +1,8 @@
 import axios from 'axios'
+import { showNotify } from 'vant'
 import type { AxiosInstance, AxiosError } from 'axios'
 
-import { useStore } from './store'
-import { showNotify } from 'vant'
+import { useStore } from './store.ts'
 
 let instance: AxiosInstance | null = null
 export const useAxiosInstance = (): AxiosInstance => {

@@ -2,8 +2,8 @@
 import { useIntervalFn } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
 
-import { useAxiosInstance } from '../lib/axios'
-import filesize from '../utils/filesize'
+import { useAxiosInstance } from '../lib/axios.ts'
+import filesize from '../utils/filesize.ts'
 
 const {
   data,

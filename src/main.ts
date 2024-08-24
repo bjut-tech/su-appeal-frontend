@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import {
+  ActionSheet,
   Button,
   Cell,
   CellGroup,
@@ -14,21 +15,22 @@ import {
   List,
   Loading,
   NavBar,
-  Picker,
   Popup,
   Progress,
   PullRefresh,
+  SwipeCell,
   Tabbar,
   TabbarItem
 } from 'vant'
 import '@vant/touch-emulator'
 
-import { injectAnalytics } from './lib/analytics'
-import router from './lib/router'
+import { injectAnalytics } from './lib/analytics.ts'
+import router from './lib/router.ts'
 
 import App from './App.vue'
 
 import './assets/styles/tailwind.css'
+import 'vant/es/action-sheet/style'
 import 'vant/es/button/style'
 import 'vant/es/cell/style'
 import 'vant/es/cell-group/style'
@@ -43,10 +45,10 @@ import 'vant/es/list/style'
 import 'vant/es/loading/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/notify/style'
-import 'vant/es/picker/style'
 import 'vant/es/popup/style'
 import 'vant/es/progress/style'
 import 'vant/es/pull-refresh/style'
+import 'vant/es/swipe-cell/style'
 import 'vant/es/tabbar/style'
 import 'vant/es/tabbar-item/style'
 import 'vant/es/toast/style'
@@ -60,6 +62,7 @@ app.use(router)
 const pinia = createPinia()
 app.use(pinia)
 
+app.use(ActionSheet)
 app.use(Button)
 app.use(Cell)
 app.use(CellGroup)
@@ -73,10 +76,10 @@ app.use(Lazyload)
 app.use(List)
 app.use(Loading)
 app.use(NavBar)
-app.use(Picker)
 app.use(Popup)
 app.use(Progress)
 app.use(PullRefresh)
+app.use(SwipeCell)
 app.use(Tabbar)
 app.use(TabbarItem)
 

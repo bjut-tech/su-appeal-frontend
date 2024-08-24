@@ -1,13 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 
-import { useSchool } from './school'
-import { useStore } from './store'
+import { useSchool } from './school.ts'
+import { useStore } from './store.ts'
 import About from '../pages/About.vue'
 import AdminAdminList from '../pages/AdminAdminList.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
+import AnnouncementCategoryIndex from '../pages/AnnouncementCategoryIndex.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
-import AnnouncementCreate from '../pages/AnnouncementCreate.vue'
+import AnnouncementEdit from '../pages/AnnouncementEdit.vue'
 import NotFound from '../pages/NotFound.vue'
 import QuestionCreate from '../pages/QuestionCreate.vue'
 import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
@@ -60,10 +61,26 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
+    path: '/announcements/categories',
+    component: AnnouncementCategoryIndex,
+    meta: {
+      title: '公告类别',
+      auth: 'ADMIN'
+    }
+  },
+  {
     path: '/announcements/create',
-    component: AnnouncementCreate,
+    component: AnnouncementEdit,
     meta: {
       title: '发布公告',
+      auth: 'ADMIN'
+    }
+  },
+  {
+    path: '/announcements/:id/edit',
+    component: AnnouncementEdit,
+    meta: {
+      title: '编辑公告',
       auth: 'ADMIN'
     }
   },

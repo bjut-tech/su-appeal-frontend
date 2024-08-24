@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useSchoolList } from '../lib/school'
-import type { SchoolInfo } from '../types/school'
+import { useSchoolList } from '../lib/school.ts'
+import type { SchoolInfo } from '../types/school.ts'
 
 const schools = useSchoolList()
 

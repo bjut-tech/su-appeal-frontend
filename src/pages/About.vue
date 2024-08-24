@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { useAxios } from '@vueuse/integrations/useAxios'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useSchool } from '../lib/school'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useSchool } from '../lib/school.ts'
 
 interface ActuatorInfo {
   build?: {

@@ -3,19 +3,21 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 
-import { useAxiosInstance } from '../lib/axios'
-import { useStore } from '../lib/store'
-import { formatDate } from '../utils/datetime'
-import AttachmentShow from '../components/AttachmentShow.vue'
-import CollapseParagraph from '../components/CollapseParagraph.vue'
+import { useAxiosInstance } from '../lib/axios.ts'
+import { useStore } from '../lib/store.ts'
+import AnnouncementShow from '../components/AnnouncementShow.vue'
 import PaginatedList from '../components/PaginatedList.vue'
-import type { Announcement } from '../types/Announcement'
+import type { Announcement } from '../types/announcement.ts'
 
 const store = useStore()
 
 const router = useRouter()
 
 const list = ref<Announcement[]>([])
+
+const onEdit = (id: number): void => {
+  router.push(`/announcements/${id}/edit`)
+}
 
 const onPin = (id: number): void => {
   useAxiosInstance()
@@ -114,77 +116,14 @@ const goCreate = (): void => {
       </div>
       <hr class="my-2 border-gray-200 dark:border-neutral-800">
     </template>
-
-    <div
+    <announcement-show
       v-for="item of list"
       :key="item.id"
-      class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm"
-    >
-      <div class="flex flex-col items-stretch gap-4 p-4">
-        <div class="flex items-center gap-2">
-          <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
-          <h5
-            class="flex-1 font-semibold"
-            v-text="item.title.trim()"
-          />
-          <i
-            v-if="item.pinned"
-            class="bi bi-pin-angle-fill flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
-          />
-          <span
-            class="flex-shrink-0 text-xs text-gray-500 dark:text-neutral-400"
-            v-text="formatDate(item.createdAt)"
-          />
-        </div>
-        <collapse-paragraph
-          class="text-sm text-gray-600 dark:text-neutral-300"
-          :text="item.content.trim()"
-        />
-        <attachment-show :attachments="item.attachments" />
-        <p
-          v-if="item.user"
-          class="text-xs text-gray-500 dark:text-neutral-400"
-        >
-          发布者：{{ item.user.name ?? item.user.uid }}
-        </p>
-      </div>
-      <div
-        v-if="store.isAdmin"
-        class="flex justify-end px-4 py-3 gap-3 border-t border-gray-200 dark:border-neutral-800"
-      >
-        <van-button
-          v-if="item.pinned"
-          type="danger"
-          size="small"
-          plain
-          icon-prefix="bi"
-          icon="pin"
-          @click="onUnpin(item.id)"
-        >
-          取消置顶
-        </van-button>
-        <van-button
-          v-else
-          type="success"
-          size="small"
-          plain
-          icon-prefix="bi"
-          icon="pin-angle"
-          @click="onPin(item.id)"
-        >
-          置顶
-        </van-button>
-        <van-button
-          type="danger"
-          size="small"
-          plain
-          icon-prefix="bi"
-          icon="trash3"
-          @click="onDelete(item.id)"
-        >
-          删除
-        </van-button>
-      </div>
-    </div>
+      :announcement="item"
+      @edit="onEdit(item.id)"
+      @pin="onPin(item.id)"
+      @unpin="onUnpin(item.id)"
+      @delete="onDelete(item.id)"
+    />
   </paginated-list>
 </template>
