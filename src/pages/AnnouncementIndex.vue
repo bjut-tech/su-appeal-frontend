@@ -125,7 +125,7 @@ const goCreate = (): void => {
           <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
           <h5
             class="flex-1 font-semibold"
-            v-text="item.title"
+            v-text="item.title.trim()"
           />
           <i
             v-if="item.pinned"
@@ -138,7 +138,7 @@ const goCreate = (): void => {
         </div>
         <collapse-paragraph
           class="text-sm text-gray-600 dark:text-neutral-300"
-          :text="item.content"
+          :text="item.content.trim()"
         />
         <attachment-show :attachments="item.attachments" />
         <p

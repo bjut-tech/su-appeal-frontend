@@ -3,7 +3,7 @@ import type { User } from './User'
 
 export interface Question {
   id: number
-  user: User
+  user: User | null
   contact: string
   campus: string
   content: string

@@ -180,7 +180,7 @@ const onLikeAnswer = (): void => {
 <template>
   <div class="bg-white dark:bg-neutral-900 rounded-lg shadow-sm">
     <div
-      v-if="showUser && question.user"
+      v-if="showUser"
       class="flex items-center px-4 py-3 gap-3 border-b border-gray-200 dark:border-neutral-800"
     >
       <van-image
@@ -192,9 +192,10 @@ const onLikeAnswer = (): void => {
       <div class="flex flex-col gap-1">
         <span
           class="text-sm text-gray-600 dark:text-neutral-300"
-          v-text="question.user.name || '匿名用户'"
+          v-text="question.user?.name || '匿名用户'"
         />
         <span
+          v-if="question.user"
           class="text-xs text-gray-500 dark:text-neutral-400"
           v-text="question.user.uid"
         />
@@ -220,14 +221,14 @@ const onLikeAnswer = (): void => {
       <collapse-paragraph
         v-if="fullContent"
         class="text-sm text-gray-600 dark:text-neutral-300"
-        :text="question.content"
+        :text="question.content.trim()"
         :limit="1000"
       />
       <p
         v-else
         class="text-sm text-gray-600 dark:text-neutral-300"
         :class="{ 'whitespace-pre-wrap': fullContent }"
-        v-text="truncate(question.content)"
+        v-text="truncate(question.content.trim())"
       />
       <attachment-show
         v-if="fullContent"
@@ -249,7 +250,7 @@ const onLikeAnswer = (): void => {
         v-if="showUser && question.contact"
         class="text-xs text-gray-500 dark:text-neutral-400"
       >
-        联系方式：{{ question.contact }}
+        联系方式：{{ question.contact.trim() }}
       </p>
     </div>
     <div
@@ -276,13 +277,13 @@ const onLikeAnswer = (): void => {
       <collapse-paragraph
         v-if="fullContent"
         class="text-sm text-gray-600 dark:text-neutral-300"
-        :text="question.answer.content"
+        :text="question.answer.content.trim()"
         :limit="1000"
       />
       <p
         v-else
         class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
-        v-text="truncate(question.answer.content)"
+        v-text="truncate(question.answer.content.trim())"
       />
       <attachment-show
         v-if="fullContent"
