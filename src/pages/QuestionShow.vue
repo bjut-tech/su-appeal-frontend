@@ -1,28 +1,21 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { showConfirmDialog, showToast } from 'vant'
 import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios.ts'
 import { useStore } from '../lib/store.ts'
-import AttachmentUpload from '../components/AttachmentUpload.vue'
+import BlockLoading from '../components/BlockLoading.vue'
+import QuestionAnswerEdit from '../components/QuestionAnswerEdit.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
-import type { Attachment } from '../types/attachment.ts'
 import type { Question } from '../types/question.ts'
-
-interface AnswerForm {
-  content: string
-  attachments: Attachment[]
-}
 
 const route = useRoute()
 
 const router = useRouter()
 
 const store = useStore()
-
-const axios = useAxiosInstance()
 
 const loading = ref(false)
 const question = ref<Question | null>(null)
@@ -32,16 +25,10 @@ const fetchData = (): void => {
   loading.value = true
   question.value = null
 
-  axios.get<Question>(`questions/${route.params.id}`)
+  useAxiosInstance().get<Question>(`questions/${route.params.id}`)
     .then(({ data }) => {
       question.value = data
-      if (data.answer) {
-        answerForm.value = {
-          content: data.answer.content,
-          attachments: data.answer.attachments
-        }
-      }
-      axios.get<number[]>('questions/liked-answers')
+      useAxiosInstance().get<number[]>('questions/liked-answers')
         .then(({ data: data1 }) => {
           liked.value = data1.includes(data.answer?.id ?? -1)
         })
@@ -86,43 +73,6 @@ const onDelete = (): void => {
   router.replace('/questions')
 }
 
-const answerForm = ref<AnswerForm>({
-  content: '',
-  attachments: []
-})
-
-const answerErrors = ref<Record<string, string>>({})
-const isAnswerSubmitting = ref(false)
-
-const answerSubmit = (): void => {
-  if (!question.value) {
-    return
-  }
-
-  answerErrors.value = {}
-  isAnswerSubmitting.value = true
-  axios.post(`questions/${question.value.id}/answer`, {
-    content: answerForm.value.content,
-    attachmentIds: answerForm.value.attachments.map((attachment) => attachment.id)
-  }).then(() => {
-    showToast({
-      type: 'success',
-      message: '回复成功'
-    })
-    fetchData()
-  }).catch((e: AxiosError) => {
-    showToast({
-      type: 'fail',
-      message: '回复失败'
-    })
-    if (e?.response?.status === 422) {
-      answerErrors.value = e?.response?.data as Record<string, string>
-    } else {
-      console.error(e)
-    }
-  }).finally(() => (isAnswerSubmitting.value = false))
-}
-
 const onDeleteAnswer = (): void => {
   if (!question.value) {
     return
@@ -133,7 +83,7 @@ const onDeleteAnswer = (): void => {
     message: '确定要删除回复吗？',
     confirmButtonColor: '#ee0a24'
   }).then(() => {
-    axios.delete(`questions/${question.value?.id}/answer`)
+    useAxiosInstance().delete(`questions/${question.value?.id}/answer`)
       .then(() => {
         showToast({
           type: 'success',
@@ -151,7 +101,7 @@ const onDeleteAnswer = (): void => {
   })
 }
 
-onBeforeRouteUpdate(async (to, from) => {
+onBeforeRouteUpdate((to, from) => {
   if (to.params.id === from.params.id) {
     return
   }
@@ -161,10 +111,6 @@ onBeforeRouteUpdate(async (to, from) => {
 
 onMounted(() => {
   fetchData()
-})
-
-watch(() => answerForm.value.attachments, (value) => {
-  console.trace(value)
 })
 </script>
 
@@ -191,59 +137,11 @@ watch(() => answerForm.value.attachments, (value) => {
 
     <template v-if="store.isAdmin">
       <hr class="mx-4 mt-6 mb-2 border-gray-200 dark:border-neutral-800">
-      <van-cell-group
-        title="回复"
-        inset
-      >
-        <van-field
-          v-model="answerForm.content"
-          type="textarea"
-          placeholder="请填写要回复的内容，也可以在下方上传图片和附件。"
-          rows="10"
-          autosize
-          show-word-limit
-          maxlength="20000"
-          autocomplete="off"
-          :error-message="answerErrors.content"
-        />
-      </van-cell-group>
-      <attachment-upload v-model="answerForm.attachments" />
-      <div class="flex justify-evenly items-stretch mt-4 px-4 gap-4">
-        <van-button
-          v-if="question.answer"
-          type="danger"
-          block
-          icon-prefix="bi"
-          icon="trash3"
-          @click="onDeleteAnswer"
-        >
-          删除回复
-        </van-button>
-        <van-button
-          type="primary"
-          block
-          icon-prefix="bi"
-          icon="send"
-          :loading="isAnswerSubmitting"
-          loading-text="加载中..."
-          @click="answerSubmit"
-        >
-          提交回复
-        </van-button>
-      </div>
+      <question-answer-edit
+        :question="question"
+        @delete="onDeleteAnswer"
+      />
     </template>
   </div>
-  <div
-    v-else
-    class="flex justify-center py-8"
-  >
-    <div class="bg-white dark:bg-neutral-900 p-4 rounded-lg">
-      <van-loading
-        size="24px"
-        vertical
-      >
-        加载中...
-      </van-loading>
-    </div>
-  </div>
+  <block-loading v-else />
 </template>

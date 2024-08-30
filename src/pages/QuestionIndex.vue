@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAxios } from '@vueuse/integrations/useAxios'
 
@@ -10,6 +10,12 @@ import CampusSelect from '../components/CampusSelect.vue'
 import PaginatedList from '../components/PaginatedList.vue'
 import QuestionShowComponent from '../components/QuestionShow.vue'
 import type { Question } from '../types/question.ts'
+
+interface QuestionIndexFilter {
+  status: string
+  campus: string
+  search: string
+}
 
 defineProps<{
   history?: boolean
@@ -29,39 +35,14 @@ const {
   immediate: false
 })
 
-const filterStatus = ref<string>('')
-const filterCampus = ref<string>('')
-const filterSearch = ref<string>('')
-const listFiltered = computed<Question[]>(() => {
-  return list.value.filter((item) => {
-    if (filterStatus.value === 'unreplied' && item.answer) {
-      return false
-    } else if (filterStatus.value === 'unpublished' && !(item.answer && !item.published)) {
-      return false
-    } else if (filterStatus.value === 'published' && !item.published) {
-      return false
-    }
-
-    if (filterCampus.value && item.campus !== filterCampus.value) {
-      return false
-    }
-
-    if (filterSearch.value) {
-      const search = filterSearch.value.toLowerCase()
-      if (!(
-        item.content.toLowerCase().includes(search) ||
-        item.answer?.content.toLowerCase().includes(search)
-      )) {
-        return false
-      }
-    }
-
-    return true
-  })
+const filter = ref<QuestionIndexFilter>({
+  status: '',
+  campus: '',
+  search: ''
 })
 
 const toggleFilterStatus = (status?: string): void => {
-  filterStatus.value = filterStatus.value === status ? '' : (status ?? '')
+  filter.value.status = filter.value.status === status ? '' : (status ?? '')
 }
 
 const onPublish = (id: number): void => {
@@ -124,8 +105,8 @@ onMounted(() => {
   if (route.query.status &&
     typeof route.query.status === 'string' &&
     store.isAdmin &&
-    ['unreplied', 'unpublished', 'published'].includes(route.query.status)) {
-    filterStatus.value = route.query.status
+    ['not_replied', 'not_published', 'published'].includes(route.query.status)) {
+    filter.value.status = route.query.status
   }
 })
 </script>
@@ -133,9 +114,9 @@ onMounted(() => {
 <template>
   <paginated-list
     ref="listComponent"
-    v-slot="{ check }"
     v-model="list"
     :url="history ? 'questions/history' : 'questions'"
+    :params="history ? undefined : filter"
     custom-class="flex flex-col px-4 py-6 gap-4"
     pull-refresh
   >
@@ -145,29 +126,29 @@ onMounted(() => {
     >
       <button
         class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
-        :class="{ 'text-gray-500 dark:text-neutral-400': filterStatus, 'text-brand': !filterStatus }"
-        @click="toggleFilterStatus(); check()"
+        :class="{ 'text-gray-500 dark:text-neutral-400': filter.status, 'text-brand': !filter.status }"
+        @click="toggleFilterStatus()"
       >
         全部
       </button>
       <button
         class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
-        :class="{ 'text-gray-500 dark:text-neutral-400': filterStatus !== 'unreplied', 'text-red-500': filterStatus === 'unreplied' }"
-        @click="toggleFilterStatus('unreplied'); check()"
+        :class="{ 'text-gray-500 dark:text-neutral-400': filter.status !== 'not_replied', 'text-red-500': filter.status === 'not_replied' }"
+        @click="toggleFilterStatus('not_replied')"
       >
         未回复
       </button>
       <button
         class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
-        :class="{ 'text-gray-500 dark:text-neutral-400': filterStatus !== 'unpublished', 'text-orange-500': filterStatus === 'unpublished' }"
-        @click="toggleFilterStatus('unpublished'); check()"
+        :class="{ 'text-gray-500 dark:text-neutral-400': filter.status !== 'not_published', 'text-orange-500': filter.status === 'not_published' }"
+        @click="toggleFilterStatus('not_published')"
       >
         未公布
       </button>
       <button
         class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
-        :class="{ 'text-gray-500 dark:text-neutral-400': filterStatus !== 'published', 'text-green-500': filterStatus === 'published' }"
-        @click="toggleFilterStatus('published'); check()"
+        :class="{ 'text-gray-500 dark:text-neutral-400': filter.status !== 'published', 'text-green-500': filter.status === 'published' }"
+        @click="toggleFilterStatus('published')"
       >
         已公布
       </button>
@@ -178,26 +159,24 @@ onMounted(() => {
     >
       <campus-select
         v-slot="{ trigger }"
-        v-model="filterCampus"
-        @update:model-value="check()"
+        v-model="filter.campus"
       >
         <button
           class="flex-shrink-0 inline-flex gap-1 items-center px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
-          :class="{ 'text-brand': filterCampus, 'text-gray-500 dark:text-neutral-400': !filterCampus }"
-          @click="filterCampus ? filterCampus = '' : trigger()"
+          :class="{ 'text-brand': filter.campus, 'text-gray-500 dark:text-neutral-400': !filter.campus }"
+          @click="filter.campus ? filter.campus = '' : trigger()"
         >
           <i class="bi bi-funnel" />
-          {{ filterCampus ? getCampusName(filterCampus) : '校区' }}
+          {{ filter.campus ? getCampusName(filter.campus) : '校区' }}
         </button>
       </campus-select>
       <van-field
-        v-model="filterSearch"
-        class="bg-white dark:bg-neutral-900 !text-xs !sm:text-sm text-gray-500 dark:text-neutral-400 !px-3 !sm:px-4 !py-2 rounded-lg"
+        v-model="filter.search"
+        class="bg-white dark:bg-neutral-900 !text-xs sm:!text-sm text-gray-500 dark:text-neutral-400 !px-3 sm:!px-4 !py-2 rounded-lg"
         :border="false"
         icon-prefix="bi"
         left-icon="search"
         placeholder="搜索反馈内容..."
-        @update:model-value="check()"
       />
     </div>
     <!--              | history    | published | all (admin)
@@ -209,13 +188,13 @@ onMounted(() => {
     --- allowPublish  | false      | admin     | answered
     -->
     <question-show-component
-      v-for="item in listFiltered"
+      v-for="item in list"
       :key="item.id"
       :question="item"
       :answer-liked="listLiked?.includes(item.answer?.id ?? -1)"
       :show-user="!history && store.isAdmin"
       :show-published="history || store.isAdmin"
-      :hide-campus="!!filterCampus"
+      :hide-campus="!!filter.campus"
       :full-content="!history && !store.isAdmin && item.published"
       :allow-answer="store.isAdmin"
       :allow-show="history || store.isAdmin"

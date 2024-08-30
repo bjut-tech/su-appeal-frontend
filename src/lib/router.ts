@@ -6,9 +6,12 @@ import { useStore } from './store.ts'
 import About from '../pages/About.vue'
 import AdminAdminList from '../pages/AdminAdminList.vue'
 import AdminServerStatus from '../pages/AdminServerStatus.vue'
+import AnnouncementCarouselCreate from '../pages/AnnouncementCarouselCreate.vue'
+import AnnouncementCarouselIndex from '../pages/AnnouncementCarouselIndex.vue'
 import AnnouncementCategoryIndex from '../pages/AnnouncementCategoryIndex.vue'
 import AnnouncementIndex from '../pages/AnnouncementIndex.vue'
 import AnnouncementEdit from '../pages/AnnouncementEdit.vue'
+import AnnouncementShow from '../pages/AnnouncementShow.vue'
 import NotFound from '../pages/NotFound.vue'
 import QuestionCreate from '../pages/QuestionCreate.vue'
 import QuestionCreateSuccess from '../pages/QuestionCreateSuccess.vue'
@@ -58,6 +61,29 @@ const routes: RouteRecordRaw[] = [
     component: AnnouncementIndex,
     meta: {
       title: '{school}权益墙'
+    }
+  },
+  {
+    path: '/announcements/:id',
+    component: AnnouncementShow,
+    meta: {
+      title: '公告详情'
+    }
+  },
+  {
+    path: '/announcements/carousels',
+    component: AnnouncementCarouselIndex,
+    meta: {
+      title: '轮播公告管理',
+      auth: 'ADMIN'
+    }
+  },
+  {
+    path: '/announcements/carousels/create',
+    component: AnnouncementCarouselCreate,
+    meta: {
+      title: '添加轮播公告',
+      auth: 'ADMIN'
     }
   },
   {

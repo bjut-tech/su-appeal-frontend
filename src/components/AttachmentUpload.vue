@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeUnmount, ref, watch } from 'vue'
 import { showToast, showConfirmDialog } from 'vant'
 import { UseObjectUrl } from '@vueuse/components'
 import type { AxiosError } from 'axios'
@@ -33,10 +33,18 @@ const store = useStore()
 
 const axios = useAxiosInstance()
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   modelValue: Attachment[]
   title?: string
-}>()
+  allowImage?: boolean
+  allowFile?: boolean
+  allowMultiple?: boolean
+}>(), {
+  title: '附件',
+  allowImage: true,
+  allowFile: true,
+  allowMultiple: true
+})
 
 const emit = defineEmits([
   'update:modelValue'
@@ -161,7 +169,7 @@ const onUpload = (mime: string = '*'): void => {
   const input = document.createElement('input')
   input.type = 'file'
   input.accept = mime
-  input.multiple = store.isAdmin
+  input.multiple = props.allowMultiple && store.isAdmin
   input.onchange = (e) => {
     const newFiles = (e.target as HTMLInputElement).files
 
@@ -241,10 +249,6 @@ const onRemove = (index: number): void => {
   })
 }
 
-const title = computed(() => {
-  return props.title ?? '附件'
-})
-
 onBeforeUnmount(() => {
   files.value.forEach((file) => {
     if (file.status === 'uploading' && file.cancel) {
@@ -262,7 +266,7 @@ onBeforeUnmount(() => {
     <div
       v-for="(item, i) in files"
       :key="item.id"
-      class="w-full flex items-stretch text-gray-800 dark:text-neutral-200 border-b border-gray-200 dark:border-neutral-800"
+      class="w-full flex items-stretch text-gray-800 dark:text-neutral-200 border-b border-gray-200 last:border-b-0 dark:border-neutral-800"
     >
       <div
         v-if="isImage(item.name)"
@@ -344,20 +348,22 @@ onBeforeUnmount(() => {
         </button>
       </div>
     </div>
-    <van-cell
-      icon="plus"
-      title="添加图片"
-      label="每张大小不超过 10MB"
-      is-link
-      @click="onUpload('image/*')"
-    />
-    <van-cell
-      v-if="store.isAdmin"
-      icon="plus"
-      title="添加文件"
-      label="每个大小不超过 100MB"
-      is-link
-      @click="onUpload()"
-    />
+    <template v-if="allowMultiple || !files.length">
+      <van-cell
+        icon="plus"
+        title="添加图片"
+        label="每张大小不超过 10MB"
+        is-link
+        @click="onUpload('image/*')"
+      />
+      <van-cell
+        v-if="allowFile && store.isAdmin"
+        icon="plus"
+        title="添加文件"
+        label="每个大小不超过 100MB"
+        is-link
+        @click="onUpload()"
+      />
+    </template>
   </van-cell-group>
 </template>

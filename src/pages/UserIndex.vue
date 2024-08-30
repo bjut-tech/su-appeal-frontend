@@ -54,9 +54,11 @@ const { data: count } = useAxios<{
       />
     </van-cell-group>
 
-    <van-cell-group inset>
+    <van-cell-group
+      v-if="store.isAdmin"
+      inset
+    >
       <van-cell
-        v-if="store.isAdmin"
         icon-prefix="bi"
         icon="megaphone"
         title="发布公告"
@@ -65,13 +67,32 @@ const { data: count } = useAxios<{
         to="/announcements/create"
       />
       <van-cell
+        icon-prefix="bi"
+        icon="inbox"
+        title="公告类别管理"
+        center
+        is-link
+        to="/announcements/categories"
+      />
+      <van-cell
+        icon-prefix="bi"
+        icon="images"
+        title="公告轮播管理"
+        center
+        is-link
+        to="/announcements/carousels"
+      />
+    </van-cell-group>
+
+    <van-cell-group inset>
+      <van-cell
         v-if="store.isAdmin"
         icon-prefix="bi"
         icon="chat-left-text"
         title="回复反馈"
         center
         is-link
-        to="/questions?status=unreplied"
+        to="/questions?status=not_replied"
       >
         <template #value>
           <span
@@ -96,14 +117,6 @@ const { data: count } = useAxios<{
       v-if="store.isAdmin"
       inset
     >
-      <van-cell
-        icon-prefix="bi"
-        icon="megaphone"
-        title="公告类别管理"
-        center
-        is-link
-        to="/announcements/categories"
-      />
       <van-cell
         icon-prefix="bi"
         icon="people"

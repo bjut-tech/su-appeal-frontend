@@ -110,10 +110,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="flex flex-col items-stretch pb-6">
-    <van-cell-group
-      title="个人信息（非必填）"
-      inset
-    >
+    <van-cell-group inset>
+      <template #title>
+        <span>个人信息（非必填）</span>
+        <p
+          v-if="!store.loggedIn"
+          class="text-xs mt-1"
+        >
+          若不填，则无法查看已提交的反馈内容
+        </p>
+      </template>
       <van-field
         v-model="uid"
         type="text"
@@ -124,16 +130,7 @@ onBeforeUnmount(() => {
         :error="!!errors.uid"
         :error-message="errors.uid"
         autocomplete="username"
-      >
-        <template
-          v-if="!store.loggedIn"
-          #extra
-        >
-          <p class="text-xs text-gray-400 dark:text-neutral-500 mt-1">
-            若不填写，则无法查看已提交的反馈内容
-          </p>
-        </template>
-      </van-field>
+      />
       <van-field
         v-model="name"
         type="text"

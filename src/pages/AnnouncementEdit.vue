@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import { showToast, showConfirmDialog } from 'vant'
 import type { AxiosError } from 'axios'
 
 import { useAxiosInstance } from '../lib/axios.ts'
-import { useCallbackStore } from '../lib/store.ts'
+import AnnouncementCategorySelect from '../components/AnnouncementCategorySelect.vue'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
+import BlockLoading from '../components/BlockLoading.vue'
 import type { Announcement, AnnouncementCategory } from '../types/announcement.ts'
 import type { Attachment } from '../types/attachment.ts'
 
@@ -23,8 +24,6 @@ const route = useRoute()
 
 const router = useRouter()
 
-const callbackStore = useCallbackStore()
-
 const announcementId = computed<number | null>(() => {
   return route.params.id ? parseInt(route.params.id as string) : null
 })
@@ -32,6 +31,40 @@ const announcementId = computed<number | null>(() => {
 const isNew = computed<boolean>(() => {
   return route.path.includes('create')
 })
+
+const isLoading = ref<boolean>(false)
+
+const fetchData = (): void => {
+  if (!announcementId.value) {
+    if (draft.value) {
+      form.value = draft.value
+    } else {
+      form.value = initialForm
+    }
+    return
+  }
+
+  isLoading.value = true
+  useAxiosInstance()
+    .get<Announcement>(`announcements/${announcementId.value}`)
+    .then(({ data }) => {
+      form.value = {
+        title: data.title,
+        category: data.category?.id ?? null,
+        content: data.content,
+        attachments: data.attachments
+      }
+    })
+    .catch(() => {
+      showToast({
+        type: 'fail',
+        message: '加载失败'
+      })
+    })
+    .finally(() => {
+      isLoading.value = false
+    })
+}
 
 const initialForm: Form = {
   title: '',
@@ -48,7 +81,7 @@ const form = ref<Form>(initialForm)
 const errors = ref<Record<string, string>>({})
 
 const {
-  isLoading,
+  isLoading: isSubmitting,
   execute
 } = useAxios<Announcement>('', {
   method: 'POST'
@@ -117,18 +150,13 @@ const submit = (): void => {
 
 const categoryName = ref('')
 
-const onChooseCategory = (): void => {
-  router.push('/announcements/categories?choose=true')
-}
-
-watch(() => {
-  return form.value.category
-}, (v) => {
+watch(() => form.value.category, (v) => {
   if (!v) {
+    categoryName.value = ''
     return
   }
 
-  categoryName.value = `加载中... (${v})`
+  categoryName.value = `加载中... (#${v})`
   useAxiosInstance()
     .get<AnnouncementCategory>(`announcements/categories/${v}`)
     .then(({ data }) => {
@@ -144,43 +172,24 @@ watch(() => {
 })
 
 onMounted(() => {
-  if (isNew.value) {
-    if (draft.value) {
-      form.value = draft.value
-    }
-  } else {
-    useAxiosInstance()
-      .get<Announcement>(`announcements/${announcementId.value}`)
-      .then(({ data }) => {
-        form.value = {
-          title: data.title,
-          category: data.category?.id ?? null,
-          content: data.content,
-          attachments: data.attachments
-        }
-      })
-      .catch(() => {
-        showToast({
-          type: 'fail',
-          message: '加载失败'
-        })
-      })
-  }
-
-  if (callbackStore.hasSelectedCategory) {
-    form.value.category = callbackStore.selectedCategory
-    callbackStore.selectedCategory = null
-    callbackStore.hasSelectedCategory = false
-  }
+  fetchData()
 })
 
-const onLeave = () => {
+const onLeave = (): void => {
   if (isNew.value) {
     saveDraft()
   }
 }
 
 const isRouteLeave = ref(false)
+
+onBeforeRouteUpdate((to, from) => {
+  if (to.params.id === from.params.id) {
+    return
+  }
+
+  fetchData()
+})
 
 onBeforeRouteLeave(() => {
   isRouteLeave.value = true
@@ -195,7 +204,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="flex flex-col items-stretch py-6">
+  <div
+    v-if="!isLoading"
+    class="flex flex-col items-stretch py-6"
+  >
     <van-cell-group inset>
       <van-field
         v-model="form.title"
@@ -208,17 +220,22 @@ onBeforeUnmount(() => {
         :error="!!errors.title"
         :error-message="errors.title"
       />
-      <van-field
-        type="text"
-        label="类别"
-        placeholder="无类别"
-        readonly
-        :model-value="categoryName"
-        is-link
-        :error="!!errors.category"
-        :error-message="errors.category"
-        @click="onChooseCategory"
-      />
+      <announcement-category-select
+        v-slot="{ trigger }"
+        v-model="form.category"
+      >
+        <van-field
+          type="text"
+          label="类别"
+          placeholder="无类别"
+          readonly
+          :model-value="categoryName"
+          is-link
+          :error="!!errors.category"
+          :error-message="errors.category"
+          @click="trigger()"
+        />
+      </announcement-category-select>
       <van-field
         v-model="form.content"
         type="textarea"
@@ -249,7 +266,7 @@ onBeforeUnmount(() => {
         block
         icon-prefix="bi"
         :icon="isNew ? 'send' : 'floppy'"
-        :loading="isLoading"
+        :loading="isSubmitting"
         loading-text="加载中..."
         @click="submit"
       >
@@ -257,4 +274,5 @@ onBeforeUnmount(() => {
       </van-button>
     </div>
   </div>
+  <block-loading v-else />
 </template>

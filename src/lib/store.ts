@@ -49,13 +49,3 @@ export const useStore = defineStore('app', () => {
     user
   }
 })
-
-export const useCallbackStore = defineStore('callback', () => {
-  const selectedCategory = ref<number | null>(null)
-  const hasSelectedCategory = ref(false)
-
-  return {
-    selectedCategory,
-    hasSelectedCategory
-  }
-})

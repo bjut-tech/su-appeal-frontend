@@ -4,8 +4,13 @@ import { useAxios } from '@vueuse/integrations/useAxios'
 import type { Ref } from 'vue'
 
 import { useAxiosInstance } from '../lib/axios.ts'
+import BlockLoading from '../components/BlockLoading.vue'
 
-const { data, error } = useAxios<string[]>('admin/admins', useAxiosInstance(), {
+const {
+  data,
+  error,
+  isLoading
+} = useAxios<string[]>('admin/admins', useAxiosInstance(), {
   immediate: true,
   initialData: []
 })
@@ -14,7 +19,10 @@ const dataSorted = useSorted(data as Ref<string[]>)
 </script>
 
 <template>
-  <div class="flex flex-col items-stretch py-6 gap-4">
+  <div
+    v-if="!isLoading"
+    class="flex flex-col items-stretch py-6 gap-4"
+  >
     <van-cell-group inset>
       <van-cell
         v-for="item in dataSorted"
@@ -28,10 +36,11 @@ const dataSorted = useSorted(data as Ref<string[]>)
       />
     </van-cell-group>
     <p
-      v-show="data"
+      v-show="data?.length"
       class="px-4 text-xs text-gray-500 dark:text-neutral-400"
     >
       以上账号具有管理员权限。列表仅供参考，如需修改，请编辑服务器配置。
     </p>
   </div>
+  <block-loading v-else />
 </template>

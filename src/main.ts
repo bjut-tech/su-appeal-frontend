@@ -15,10 +15,12 @@ import {
   List,
   Loading,
   NavBar,
+  Picker,
   Popup,
   Progress,
   PullRefresh,
-  SwipeCell,
+  Swipe,
+  SwipeItem,
   Tabbar,
   TabbarItem
 } from 'vant'
@@ -45,10 +47,12 @@ import 'vant/es/list/style'
 import 'vant/es/loading/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/notify/style'
+import 'vant/es/picker/style'
 import 'vant/es/popup/style'
 import 'vant/es/progress/style'
 import 'vant/es/pull-refresh/style'
-import 'vant/es/swipe-cell/style'
+import 'vant/es/swipe/style'
+import 'vant/es/swipe-item/style'
 import 'vant/es/tabbar/style'
 import 'vant/es/tabbar-item/style'
 import 'vant/es/toast/style'
@@ -76,10 +80,12 @@ app.use(Lazyload)
 app.use(List)
 app.use(Loading)
 app.use(NavBar)
+app.use(Picker)
 app.use(Popup)
 app.use(Progress)
 app.use(PullRefresh)
-app.use(SwipeCell)
+app.use(Swipe)
+app.use(SwipeItem)
 app.use(Tabbar)
 app.use(TabbarItem)
 

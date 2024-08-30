@@ -20,3 +20,15 @@ export interface AnnouncementCategory {
   createdAt: string
   updatedAt: string
 }
+
+export interface AnnouncementCarousel {
+  id: number
+  announcement: Announcement
+  cover: Attachment | null
+}
+
+export interface AnnouncementAutocompleteItem {
+  id: number
+  title: string
+  content: string
+}

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStore } from '../lib/store.ts'
 import { formatDate } from '../utils/datetime.ts'
 import AttachmentShow from './AttachmentShow.vue'
 import CollapseParagraph from './CollapseParagraph.vue'
@@ -7,16 +6,15 @@ import type { Announcement } from '../types/announcement.ts'
 
 defineProps<{
   announcement: Announcement
+  showCategory?: boolean
+  showManage?: boolean
+  noCollapse?: boolean
 }>()
 
 const emit = defineEmits([
-  'edit',
-  'pin',
-  'unpin',
+  'manage',
   'delete'
 ])
-
-const store = useStore()
 </script>
 
 <template>
@@ -25,10 +23,10 @@ const store = useStore()
       <div class="flex items-center gap-2">
         <div
           class="flex-shrink-0 w-1 rounded bg-brand"
-          :class="announcement.category ? 'h-10' : 'h-5'"
+          :class="showCategory && announcement.category ? 'h-10' : 'h-5'"
         />
         <div
-          v-if="announcement.category"
+          v-if="showCategory && announcement.category"
           class="flex-1 flex flex-col gap-0.5"
         >
           <div class="flex justify-end items-center gap-2 text-xs text-gray-500 dark:text-neutral-400">
@@ -65,11 +63,18 @@ const store = useStore()
           />
         </template>
       </div>
-      <collapse-paragraph
-        v-if="Array.from(announcement.content ?? '').length > 1"
-        class="text-sm text-gray-600 dark:text-neutral-300"
-        :text="announcement.content.trim()"
-      />
+      <template v-if="Array.from(announcement.content ?? '').length > 1">
+        <p
+          v-if="noCollapse"
+          class="text-sm text-gray-600 dark:text-neutral-300 whitespace-pre-wrap"
+          v-text="announcement.content.trim()"
+        />
+        <collapse-paragraph
+          v-else
+          class="text-sm text-gray-600 dark:text-neutral-300"
+          :text="announcement.content.trim()"
+        />
+      </template>
       <attachment-show :attachments="announcement.attachments" />
       <p
         v-if="announcement.user"
@@ -79,7 +84,7 @@ const store = useStore()
       </p>
     </div>
     <div
-      v-if="store.isAdmin"
+      v-if="showManage"
       class="flex justify-end px-4 py-3 gap-3 border-t border-gray-200 dark:border-neutral-800"
     >
       <van-button
@@ -87,42 +92,10 @@ const store = useStore()
         size="small"
         plain
         icon-prefix="bi"
-        icon="pencil"
-        @click="emit('edit')"
+        icon="gear"
+        @click="emit('manage')"
       >
-        编辑
-      </van-button>
-      <van-button
-        v-if="announcement.pinned"
-        type="danger"
-        size="small"
-        plain
-        icon-prefix="bi"
-        icon="pin"
-        @click="emit('unpin')"
-      >
-        取消置顶
-      </van-button>
-      <van-button
-        v-else
-        type="success"
-        size="small"
-        plain
-        icon-prefix="bi"
-        icon="pin-angle"
-        @click="emit('pin')"
-      >
-        置顶
-      </van-button>
-      <van-button
-        type="danger"
-        size="small"
-        plain
-        icon-prefix="bi"
-        icon="trash3"
-        @click="emit('delete')"
-      >
-        删除
+        管理
       </van-button>
     </div>
   </div>

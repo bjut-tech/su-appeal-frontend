@@ -32,6 +32,7 @@ const show = (): void => {
   <slot :trigger="show" />
   <van-action-sheet
     v-model:show="isShow"
+    teleport="body"
     :closeable="false"
     title="选择校区"
     cancel-text="取消"

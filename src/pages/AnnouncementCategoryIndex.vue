@@ -1,26 +1,16 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref } from 'vue'
 import { useAxios } from '@vueuse/integrations/useAxios'
 import { showConfirmDialog, showToast } from 'vant'
 import type { ActionSheetAction } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios.ts'
-import { useCallbackStore } from '../lib/store.ts'
+import BlockLoading from '../components/BlockLoading.vue'
 import type { AnnouncementCategory } from '../types/announcement.ts'
-
-const route = useRoute()
-
-const router = useRouter()
-
-const callbackStore = useCallbackStore()
-
-const isChoose = computed<boolean>(() => {
-  return !!route.query.choose
-})
 
 const {
   data,
+  isLoading,
   execute: fetchData
 } = useAxios<AnnouncementCategory[]>('announcements/categories', useAxiosInstance(), {
   immediate: true,
@@ -31,9 +21,9 @@ const actions = ref<ActionSheetAction[]>([
   {
     name: '编辑',
     callback: () => {
+      actionsShow.value = false
       if (actionsFor.value !== null) {
         onEdit(actionsFor.value)
-        actionsFor.value = null
       }
     }
   },
@@ -41,15 +31,17 @@ const actions = ref<ActionSheetAction[]>([
     name: '删除',
     color: '#ee0a24',
     callback: () => {
+      actionsShow.value = false
       if (actionsFor.value !== null) {
         onDelete(actionsFor.value)
-        actionsFor.value = null
       }
     }
   }
 ])
 
 const actionsFor = ref<number | null>(null)
+
+const actionsShow = ref<boolean>(false)
 
 const editing = ref<number | boolean>(false)
 
@@ -61,13 +53,8 @@ const editingForm = ref<Partial<AnnouncementCategory>>({
 const editingErrors = ref<Record<string, string>>({})
 
 const onChoose = (id: number): void => {
-  if (isChoose.value) {
-    callbackStore.selectedCategory = id
-    callbackStore.hasSelectedCategory = true
-    router.back()
-  } else {
-    actionsFor.value = id
-  }
+  actionsFor.value = id
+  actionsShow.value = true
 }
 
 const onEdit = (id: number): void => {
@@ -168,72 +155,33 @@ const onSaveEdit = (): void => {
 const onCancelEdit = (): void => {
   editing.value = false
 }
-
-const onCancel = (): void => {
-  callbackStore.selectedCategory = null
-  callbackStore.hasSelectedCategory = true
-  router.back()
-}
 </script>
 
 <template>
   <div class="flex flex-col items-stretch py-6 gap-4">
+    <block-loading v-if="isLoading" />
     <p
-      v-if="!data?.length"
+      v-else-if="!data?.length"
       class="text-center px-4 text-sm text-gray-500 dark:text-neutral-400"
     >
       暂无公告类别，请先创建
     </p>
-    <p
-      v-else-if="isChoose"
-      class="px-4 text-sm text-gray-500 dark:text-neutral-400"
-    >
-      请选择要发布的公告类别，左划可编辑
-    </p>
     <van-cell-group
-      v-if="data?.length"
+      v-else
       inset
     >
-      <van-swipe-cell
+      <van-cell
         v-for="item in data"
         :key="item.id"
-      >
-        <van-cell
-          icon-prefix="bi"
-          icon="pencil-square"
-          :title="item.name"
-          is-link
-          center
-          @click="onChoose(item.id)"
-        />
-        <template #right>
-          <van-button
-            square
-            type="warning"
-            text="编辑"
-            @click="onEdit(item.id)"
-          />
-          <van-button
-            square
-            type="danger"
-            text="删除"
-            @click="onDelete(item.id)"
-          />
-        </template>
-      </van-swipe-cell>
+        icon-prefix="bi"
+        icon="inbox"
+        :title="item.name"
+        is-link
+        center
+        @click="onChoose(item.id)"
+      />
     </van-cell-group>
     <div class="flex justify-evenly items-stretch px-4 gap-4">
-      <van-button
-        v-if="isChoose"
-        class="dark:border-neutral-800"
-        type="default"
-        block
-        icon-prefix="bi"
-        icon="x-lg"
-        @click="onCancel"
-      >
-        取消选择
-      </van-button>
       <van-button
         type="primary"
         icon-prefix="bi"
@@ -246,7 +194,8 @@ const onCancel = (): void => {
     </div>
     <van-popup
       :show="editing !== false"
-      position="bottom"
+      teleport="body"
+      position="center"
       round
       close-on-popstate
       :duration="0.2"
@@ -271,7 +220,7 @@ const onCancel = (): void => {
         </button>
       </div>
       <van-cell-group
-        class="!my-4"
+        class="!m-2 !mb-6"
         inset
       >
         <van-field
@@ -298,14 +247,16 @@ const onCancel = (): void => {
       </van-cell-group>
     </van-popup>
     <van-action-sheet
-      :show="actionsFor !== null"
+      teleport="body"
+      :show="actionsShow"
       :actions="actions"
+      title="编辑公告类别"
       cancel-text="取消"
       :duration="0.2"
       close-on-click-overlay
       safe-area-inset-bottom
-      @cancel="actionsFor = null"
-      @close="actionsFor = null"
+      @cancel="actionsShow = false"
+      @close="actionsShow = false"
     />
   </div>
 </template>

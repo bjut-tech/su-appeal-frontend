@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T">
 import { ref } from 'vue'
+import { watchThrottled } from '@vueuse/core'
 import type { ListInstance } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios.ts'
@@ -8,6 +9,7 @@ import type { CursorPagination } from '../types/pagination.ts'
 const props = defineProps<{
   modelValue: T[]
   url: string
+  params?: Record<string, any>
   pullRefresh?: boolean
   customClass?: string
 }>()
@@ -30,6 +32,7 @@ const refreshing = ref(false)
 const onLoad = (): void => {
   axios.get<CursorPagination<T>>(props.url, {
     params: {
+      ...props.params,
       cursor: cursor.value
     }
   }).then(({ data }) => {
@@ -60,6 +63,13 @@ const onRefresh = (): void => {
   emit('update:modelValue', [])
   onLoad()
 }
+
+watchThrottled(() => props.params, () => {
+  onRefresh()
+}, {
+  deep: true,
+  throttle: 1000
+})
 </script>
 
 <template>
