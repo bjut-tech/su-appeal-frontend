@@ -59,6 +59,8 @@ import 'vant/es/toast/style'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import './assets/styles/app.css'
 
+// don't know why eslint complains about this
+// eslint-disable-next-line
 const app = createApp(App)
 
 app.use(router)
