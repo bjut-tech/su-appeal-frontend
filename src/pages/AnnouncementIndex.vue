@@ -228,10 +228,10 @@ const onDelete = (id: number): void => {
     </van-swipe>
     <div
       v-if="categories?.length"
-      class="flex gap-2 sm:gap-3 items-stretch"
+      class="flex gap-2 sm:gap-3 items-stretch flex-nowrap overflow-x-auto"
     >
       <button
-        class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
+        class="flex-1 flex-shrink-0 block px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg break-keep"
         :class="{ 'text-gray-500 dark:text-neutral-400': filter.category, 'text-brand': !filter.category }"
         @click="toggleFilterCategory()"
       >
@@ -240,7 +240,7 @@ const onDelete = (id: number): void => {
       <button
         v-for="item of categories"
         :key="item.id"
-        class="flex-1 block px-3 sm:px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg"
+        class="flex-1 flex-shrink-0 block px-4 py-2 bg-white dark:bg-neutral-900 text-xs sm:text-sm rounded-lg break-keep"
         :class="{ 'text-gray-500 dark:text-neutral-400': filter.category !== item.id, 'text-brand': filter.category === item.id }"
         @click="toggleFilterCategory(item.id)"
         v-text="item.name"

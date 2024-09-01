@@ -41,15 +41,15 @@ const version = computed(() => {
       />
     </div>
     <div class="flex flex-col items-center gap-2">
-      <h1 class="text-2xl">
+      <h1 class="text-xl sm:text-2xl text-center">
         <span class="font-bold">{{ school.name }}权益墙</span>
         <span
           v-if="version"
-          class="ml-2 text-sm text-gray-500 dark:text-neutral-400"
+          class="ml-2 text-xs text-gray-500 dark:text-neutral-400"
           v-text="version"
         />
       </h1>
-      <p class="text-gray-500 dark:text-neutral-400">
+      <p class="text-sm sm:text-base text-gray-500 dark:text-neutral-400 text-center">
         北京工业大学{{ school.name }}学生会生活权益部
       </p>
     </div>
