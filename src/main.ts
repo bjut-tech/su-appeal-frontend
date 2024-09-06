@@ -27,6 +27,7 @@ import {
 import '@vant/touch-emulator'
 
 import { injectAnalytics } from './lib/analytics.ts'
+import { showConsoleInfo } from './lib/console-info.ts'
 import router from './lib/router.ts'
 
 import App from './App.vue'
@@ -94,3 +95,4 @@ app.use(TabbarItem)
 app.mount('#app')
 
 injectAnalytics()
+showConsoleInfo()
