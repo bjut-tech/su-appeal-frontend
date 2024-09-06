@@ -128,8 +128,7 @@ const routes: RouteRecordRaw[] = [
     path: '/questions/:id',
     component: QuestionShow,
     meta: {
-      title: '反馈详情',
-      auth: true
+      title: '反馈详情'
     }
   },
   {
@@ -167,8 +166,7 @@ const routes: RouteRecordRaw[] = [
       history: true
     },
     meta: {
-      title: '我的反馈历史',
-      auth: true
+      title: '我的反馈历史'
     }
   },
   {
@@ -203,6 +201,11 @@ router.beforeEach(async () => {
   if (store.token && store.tokenExpiry !== -1 && store.tokenExpiry < Date.now()) {
     // token expired
     store.logout()
+  }
+
+  if (store.tokenSecondary && store.tokenSecondaryExpiry !== -1 && store.tokenSecondaryExpiry < Date.now()) {
+    // token expired
+    store.logoutSecondary()
   }
 
   if (store.token && !store.user) {

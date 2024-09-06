@@ -28,17 +28,21 @@ const fetchData = (): void => {
   useAxiosInstance().get<Question>(`questions/${route.params.id}`)
     .then(({ data }) => {
       question.value = data
-      useAxiosInstance().get<number[]>('questions/liked-answers')
-        .then(({ data: data1 }) => {
-          liked.value = data1.includes(data.answer?.id ?? -1)
-        })
-        .catch(console.error)
-        .finally(() => (loading.value = false))
+      if (store.loggedIn) {
+        useAxiosInstance().get<number[]>('questions/liked-answers')
+          .then(({ data: data1 }) => {
+            liked.value = data1.includes(data.answer?.id ?? -1)
+          })
+          .catch(console.error)
+          .finally(() => (loading.value = false))
+      } else {
+        loading.value = false
+      }
     })
     .catch((e: AxiosError) => {
       console.error(e)
       loading.value = false
-      if (e?.response?.status === 404 || e?.response?.status === 401) {
+      if (e?.response?.status && e.response.status >= 400) {
         router.replace('/not-found')
       } else {
         showToast({
@@ -60,6 +64,9 @@ const onLike = (): void => {
 }
 
 const onUnlike = (): void => {
+  if (!store.loggedIn) {
+    return
+  }
   if (question.value?.answer) {
     question.value.answer.likesCount--
     if (question.value.answer.likesCount < 0) {

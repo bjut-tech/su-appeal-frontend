@@ -105,11 +105,10 @@ const { data: count } = useAxios<{
         icon-prefix="bi"
         icon="clock-history"
         title="我的历史反馈"
-        :value="store.loggedIn ? (count?.history || '') : '登录后可查看'"
+        :value="count?.history || ''"
         center
-        :is-link="store.loggedIn"
-        :to="store.loggedIn ? '/user/history' : ''"
-        :aria-disabled="!store.loggedIn"
+        is-link
+        to="/user/history"
       />
     </van-cell-group>
 

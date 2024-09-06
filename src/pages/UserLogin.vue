@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router'
 import { useSchool } from '../lib/school.ts'
 import { useAxiosInstance } from '../lib/axios.ts'
 import { useStore } from '../lib/store.ts'
+import type { TokenResponse } from '../types/misc.ts'
 
 const school = useSchool()
 
@@ -30,20 +31,14 @@ const submit = (): void => {
     return
   }
 
-  useAxiosInstance().post<{
-    access_token: string
-    expires_in: number
-    token_type: 'Bearer'
-  }>('token', form, {
+  useAxiosInstance().post<TokenResponse>('token', form, {
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-Merge-Token': store.tokenSecondary ?? undefined
     }
   }).then(({ data }) => {
     store.token = data.access_token
-
-    if (data.expires_in) {
-      store.tokenExpiry = Date.now() + data.expires_in * 1000
-    }
+    store.tokenExpiry = Date.now() + data.expires_in * 1000
 
     const url = sessionStorage.getItem('intendedUrl') ?? '/user'
     sessionStorage.removeItem('intendedUrl')

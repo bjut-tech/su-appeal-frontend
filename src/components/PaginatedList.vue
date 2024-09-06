@@ -4,7 +4,7 @@ import { watchThrottled } from '@vueuse/core'
 import type { ListInstance } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios.ts'
-import type { CursorPagination } from '../types/pagination.ts'
+import type { CursorPagination } from '../types/misc.ts'
 
 const props = defineProps<{
   modelValue: T[]
@@ -37,7 +37,6 @@ const onLoad = (): void => {
     }
   }).then(({ data }) => {
     emit('update:modelValue', [
-      ...(data.pinned ?? []),
       ...props.modelValue,
       ...data.data
     ])

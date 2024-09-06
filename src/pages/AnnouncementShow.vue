@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { onBeforeRouteUpdate, useRoute } from 'vue-router'
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { useAxios } from '@vueuse/integrations/useAxios'
+import { showToast } from 'vant'
 
 import { useAxiosInstance } from '../lib/axios.ts'
 import AnnouncementShowComponent from '../components/AnnouncementShow.vue'
@@ -10,12 +11,28 @@ import type { Announcement } from '../types/announcement.ts'
 
 const route = useRoute()
 
+const router = useRouter()
+
 const {
   data: announcement,
   isLoading,
   execute: fetchData
 } = useAxios<Announcement>('', useAxiosInstance(), {
-  immediate: false
+  immediate: false,
+  onError: (e: any) => {
+    console.error(e)
+    if (e?.response?.status && e.response.status >= 400) {
+      router.replace('/not-found')
+    } else {
+      showToast({
+        type: 'fail',
+        message: '加载失败',
+        onClose: () => {
+          router.back()
+        }
+      })
+    }
+  }
 })
 
 onBeforeRouteUpdate((to, from) => {

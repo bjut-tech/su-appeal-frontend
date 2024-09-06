@@ -12,6 +12,7 @@ import { useStore } from '../lib/store.ts'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
 import CampusSelect from '../components/CampusSelect.vue'
 import type { Attachment } from '../types/attachment.ts'
+import type { ResourceTokenResponse } from '../types/misc.ts'
 import type { Question } from '../types/question.ts'
 
 interface Form {
@@ -45,7 +46,7 @@ const errors = ref<Record<string, string>>({})
 const {
   isLoading,
   execute
-} = useAxios<Question>('questions', {
+} = useAxios<ResourceTokenResponse<Question>>('questions', {
   method: 'POST'
 }, useAxiosInstance(), {
   immediate: false
@@ -77,7 +78,11 @@ const submit = (): void => {
       }
     }).then(({ data }) => {
       draft.value = form.value = initialForm()
-      router.replace(`/questions/create/success?id=${data.value?.id}`)
+      if (data.value?.resource_token) {
+        store.tokenSecondary = data.value.resource_token.access_token
+        store.tokenSecondaryExpiry = Date.now() + data.value.resource_token.expires_in * 1000
+      }
+      router.replace(`/questions/create/success?id=${data.value?.data?.id}`)
     }).catch((e: AxiosError) => {
       showToast({
         type: 'fail',
@@ -118,6 +123,12 @@ onBeforeUnmount(() => {
           class="text-xs mt-1"
         >
           若不填，则无法查看已提交的反馈内容
+        </p>
+        <p
+          v-else
+          class="text-xs mt-1"
+        >
+          若要匿名反馈，请先退出登录
         </p>
       </template>
       <van-field

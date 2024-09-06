@@ -16,6 +16,8 @@ export const useAxiosInstance = (): AxiosInstance => {
 
       if (store.token) {
         config.headers.Authorization = `Bearer ${store.token}`
+      } else if (store.tokenSecondary) {
+        config.headers.Authorization = `Bearer ${store.tokenSecondary}`
       }
 
       return config
