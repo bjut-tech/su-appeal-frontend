@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocalStorage } from '@vueuse/core'
 import { useAxios } from '@vueuse/integrations/useAxios'
@@ -11,13 +11,15 @@ import { getCampusName } from '../lib/campus.ts'
 import { useStore } from '../lib/store.ts'
 import AttachmentUpload from '../components/AttachmentUpload.vue'
 import CampusSelect from '../components/CampusSelect.vue'
+import QuestionCategorySelect from '../components/QuestionCategorySelect.vue'
 import type { Attachment } from '../types/attachment.ts'
 import type { ResourceTokenResponse } from '../types/misc.ts'
-import type { Question } from '../types/question.ts'
+import type { Question, QuestionCategory } from '../types/question.ts'
 
 interface Form {
   contact: string
   campus: string
+  category: number | null
   content: string
   attachments: Attachment[]
 }
@@ -32,6 +34,7 @@ const name = ref<string>('')
 const initialForm = (): Form => ({
   contact: '',
   campus: '',
+  category: null,
   content: '',
   attachments: []
 })
@@ -71,6 +74,7 @@ const submit = (): void => {
       data: {
         uid: store.user?.uid ?? uid.value,
         name: store.user?.name ?? name.value,
+        category: form.value.category,
         contact: form.value.contact,
         campus: form.value.campus,
         content: form.value.content,
@@ -96,6 +100,29 @@ const submit = (): void => {
     })
   })
 }
+
+const categoryName = ref('')
+
+watch(() => form.value.category, (v) => {
+  if (!v) {
+    categoryName.value = ''
+    return
+  }
+
+  categoryName.value = `加载中... (#${v})`
+  useAxiosInstance()
+    .get<QuestionCategory>(`questions/categories/${v}`)
+    .then(({ data }) => {
+      categoryName.value = data.name
+    })
+    .catch(() => {
+      // possibly that the category has been deleted, so just fail silently
+      form.value.category = null
+      categoryName.value = ''
+    })
+}, {
+  immediate: true
+})
 
 onMounted(() => {
   if (draft.value) {
@@ -183,6 +210,22 @@ onBeforeUnmount(() => {
           @click="trigger()"
         />
       </campus-select>
+      <question-category-select
+        v-slot="{ trigger }"
+        v-model="form.category"
+      >
+        <van-field
+          type="text"
+          label="反馈分类"
+          placeholder="请选择类别"
+          readonly
+          :model-value="categoryName"
+          is-link
+          :error="!!errors.category"
+          :error-message="errors.category"
+          @click="trigger()"
+        />
+      </question-category-select>
       <van-field
         v-model="form.content"
         type="textarea"

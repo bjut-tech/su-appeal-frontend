@@ -206,17 +206,43 @@ const onLikeAnswer = (): void => {
       :class="{ 'gap-4': fullContent, 'gap-2': !fullContent }"
     >
       <div class="flex items-center gap-2">
-        <div class="flex-shrink-0 w-1 h-5 rounded bg-brand" />
-        <h5 class="flex-1 font-semibold">
-          反馈
-        </h5>
-        <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
-          <span v-text="formatTime(question.createdAt)" />
-          <span
-            v-if="!question.answer"
-            :class="{ 'text-red-500': allowAnswer }"
-          >未答复</span>
+        <div
+          class="flex-shrink-0 w-1 rounded bg-brand"
+          :class="question.category ? 'h-10' : 'h-5'"
+        />
+        <div
+          v-if="question.category"
+          class="flex-1 flex flex-col gap-0.5"
+        >
+          <div class="flex justify-end items-center gap-2 text-xs text-gray-500 dark:text-neutral-400">
+            <span
+              class="flex-1 text-brand font-bold"
+              v-text="question.category.name"
+            />
+            <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
+              <span v-text="formatTime(question.createdAt)" />
+              <span
+                v-if="!question.answer"
+                :class="{ 'text-red-500': allowAnswer }"
+              >未答复</span>
+            </div>
+          </div>
+          <h5 class="font-semibold">
+            反馈
+          </h5>
         </div>
+        <template v-else>
+          <h5 class="flex-1 font-semibold">
+            反馈
+          </h5>
+          <div class="flex-shrink-0 inline-flex flex-row-reverse items-center gap-3 text-xs text-gray-500 dark:text-neutral-400">
+            <span v-text="formatTime(question.createdAt)" />
+            <span
+              v-if="!question.answer"
+              :class="{ 'text-red-500': allowAnswer }"
+            >未答复</span>
+          </div>
+        </template>
       </div>
       <collapse-paragraph
         v-if="fullContent"
